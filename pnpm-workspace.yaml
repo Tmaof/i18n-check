@@ -1,0 +1,13 @@
+packages:
+  - i18n-check
+  - demo
+  - build
+
+# https://pnpm.io/catalogs
+# pnpm 版本 >= 9.5.0
+catalog:
+  '@types/node': '^18.19.130'
+  typescript: ~5.8.3
+  tsx: ^4.19.3
+  rimraf: '^6.1.0'
+  chalk: ^5.0.1

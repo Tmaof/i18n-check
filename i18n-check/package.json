@@ -1,0 +1,44 @@
+{
+  "name": "i18n-check",
+  "version": "1.0.0",
+  "description": "A powerful i18n checking and processing tool that automatically detects Chinese text in code and wraps it with i18n.t()",
+  "private": false,
+  "type": "module",
+  "author": "maofu.tian",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build:types": "npx tsc -p tsconfig.types.json",
+    "build": "tsx build/index.ts"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.mjs",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/es/index.mjs",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/es/index.d.ts"
+    }
+  },
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "i18n-check",
+    "i18n-tool",
+    "chinese-text",
+    "auto-wrap",
+    "translation",
+    "localization"
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@10.20.0",
+  "dependencies": {
+    "glob": "^13.0.0"
+  },
+  "devDependencies": {
+    "rimraf": "catalog:",
+    "typescript": "catalog:",
+    "tsx": "catalog:",
+    "build-util": "workspace:*"
+  }
+}

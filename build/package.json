@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "name": "build-util",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build:check": "gulp --require tsx/dist/loader.cjs -f src/gulpfiles/i18n-check.ts"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-inject": "^5.0.5",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@types/fs-extra": "^9.0.13",
+    "@types/gulp": "^4.0.17",
+    "chalk": "catalog:",
+    "consola": "^2.15.3",
+    "fast-glob": "^3.2.11",
+    "fs-extra": "^10.1.0",
+    "gulp": "^4.0.2",
+    "rollup": "^4.41.1",
+    "rollup-plugin-esbuild": "^6.2.1",
+    "tsx": "catalog:"
+  }
+}
