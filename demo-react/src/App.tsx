@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './App.css';
 import About from './views/about/About.tsx';
 import Blog from './views/blog/Blog.tsx';
@@ -10,7 +11,8 @@ type Page = 'home' | 'about' | 'blog';
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
-
+  const [language, setLanguage] = useState('zh');
+  const { t, i18n } = useTranslation();
   const navigate = (page: Page) => {
     setCurrentPage(page);
     setSelectedPost(null);
@@ -38,7 +40,7 @@ function App() {
                 className={currentPage === 'home' ? 'active' : ''}
                 onClick={() => navigate('home')}
               >
-                首页
+                {t('首页')}
               </button>
             </li>
             <li>
@@ -46,7 +48,7 @@ function App() {
                 className={currentPage === 'about' ? 'active' : ''}
                 onClick={() => navigate('about')}
               >
-                关于
+                {t('关于')}
               </button>
             </li>
             <li>
@@ -54,8 +56,29 @@ function App() {
                 className={currentPage === 'blog' ? 'active' : ''}
                 onClick={() => navigate('blog')}
               >
-                博客
+                {t('博客')}
               </button>
+            </li>
+            <li>
+              {language === 'zh' ? (
+                <button
+                  onClick={() => {
+                    setLanguage('en');
+                    i18n.changeLanguage('en');
+                  }}
+                >
+                  切换英文
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setLanguage('zh');
+                    i18n.changeLanguage('zh');
+                  }}
+                >
+                  切换中文
+                </button>
+              )}
             </li>
           </ul>
         </div>

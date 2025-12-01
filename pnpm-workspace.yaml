@@ -1,6 +1,6 @@
 packages:
   - i18n-check
-  - demo
+  - demo-react
   - build
 
 # https://pnpm.io/catalogs
@@ -11,3 +11,4 @@ catalog:
   tsx: ^4.19.3
   rimraf: '^6.1.0'
   chalk: ^5.0.1
+  glob: ^13.0.0

@@ -33,12 +33,14 @@
   "license": "MIT",
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
-    "glob": "^13.0.0"
+    "axios": "^1.13.2",
+    "chalk": "catalog:",
+    "glob": "catalog:"
   },
   "devDependencies": {
+    "build-util": "workspace:*",
     "rimraf": "catalog:",
-    "typescript": "catalog:",
     "tsx": "catalog:",
-    "build-util": "workspace:*"
+    "typescript": "catalog:"
   }
 }

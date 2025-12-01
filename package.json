@@ -5,7 +5,7 @@
   "type": "module",
   "author": "maofu.tian",
   "scripts": {
-    "start": "pnpm -C demo run dev",
+    "start:demo-react": "pnpm -C demo-react run dev",
     "build:check": "pnpm -C build run build:check",
     "build": "pnpm -r run build",
     "lint:script": "eslint .",
