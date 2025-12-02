@@ -29,7 +29,7 @@ export function importI18n(options: {
     importCode = "import i18n from '@/utils/i18n';",
     i18nT = 'i18n.t',
   } = options || {};
-  const i18nTRegex = createFunctionRegex(i18nT);
+  const i18nTRegex = createI18nTRegex(i18nT);
   if (!i18nTRegex.test(content)) {
     return content;
   }
@@ -40,9 +40,9 @@ export function importI18n(options: {
 }
 
 // 匹配由变量提供的函数名，例如 xxx()
-function createFunctionRegex(functionName: string): RegExp {
+function createI18nTRegex(functionName: string): RegExp {
   // 转义特殊字符，防止正则注入
   const escapedName = functionName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   // 匹配函数调用: xxx('...') 或 xxx("...")
-  return new RegExp(`${escapedName}\\s*\\(\\s*['"]((?:[^'"\\\\\\n\\r]|\\\\.)*?)['"]\\s*[,)]`);
+  return new RegExp(`[={\\s]${escapedName}\\s*\\(\\s*['"]((?:[^'"\\\\\\n\\r]|\\\\.)*?)['"]\\s*[,)]`);
 }
