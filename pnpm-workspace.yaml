@@ -1,6 +1,7 @@
 packages:
   - i18n-check
   - demo-react
+  - demo-vue3
   - build
 
 # https://pnpm.io/catalogs
