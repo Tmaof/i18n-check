@@ -6,6 +6,7 @@ export interface LLMRequestBody {
   messages: Message[];
   max_tokens: number;
   temperature: number;
+  [key: string]: unknown;
 }
 
 interface Message {
@@ -54,7 +55,7 @@ export interface CallOpenAISingleConfig<R> {
 }
 
 /** 默认解析 LLM 响应，返回结果 */
-function defaultResolveLLMResponse<R>(response: LLMResponseBody): R {
+export function defaultResolveLLMResponse<R>(response: LLMResponseBody): R {
   const content = response.choices[0].message.content.trim();
 
   // 提取 JSON 内容（处理可能的 markdown 代码块）
@@ -80,10 +81,18 @@ function defaultResolveLLMResponse<R>(response: LLMResponseBody): R {
 export async function callOpenAISingle<R>(
   config: CallOpenAISingleConfig<R>,
 ): Promise<R> {
-  const { timeout = 120000, resolveLLMResponse = defaultResolveLLMResponse } =
-    config;
+  const {
+    apiKey,
+    timeout = 120000,
+    resolveLLMResponse = defaultResolveLLMResponse,
+    baseURL,
+    systemPrompt,
+    userPrompt,
+    maxTokens,
+    ...resetConfig
+  } = config;
 
-  if (!config.apiKey) {
+  if (!apiKey) {
     throw new Error('LLM API Key 未配置。');
   }
 
@@ -92,26 +101,25 @@ export async function callOpenAISingle<R>(
       LLMRequestBody,
       AxiosResponse<LLMResponseBody>
     >(
-      `${config.baseURL}/chat/completions`,
+      `${baseURL}/chat/completions`,
       {
-        model: config.model,
         messages: [
           {
             role: 'system',
-            content: config.systemPrompt,
+            content: systemPrompt,
           },
           {
             role: 'user',
-            content: config.userPrompt,
+            content: userPrompt,
           },
         ],
-        temperature: config.temperature,
-        max_tokens: config.maxTokens,
+        max_tokens: maxTokens,
+        ...resetConfig,
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.apiKey}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         timeout,
       },
@@ -217,6 +225,7 @@ export interface CallOpenAIConfig<T, R> {
   aiConfig: Omit<CallOpenAISingleConfig<R>, 'userPrompt'> & {
     /** 传入分批处理后的参数列表，返回用户提示词 */
     generateUserPrompt: (shardedArgList: T[]) => string | Promise<string>;
+    [key: string]: unknown;
   };
   /** 将 argList 分批处理，每批的大小 */
   batchSize?: number;
@@ -254,7 +263,7 @@ export async function callOpenAI<T, R>(
     console.warn(chalk.green(`开始处理索引为 ${index} 的任务\n`));
     const userPrompt = await aiConfig.generateUserPrompt(item);
     const res = await callOpenAISingle<R>({
-      ...aiConfig,
+      ...(aiConfig),
       userPrompt,
     });
     return res;

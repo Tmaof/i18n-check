@@ -243,8 +243,10 @@ export function matchI18nText(
         const textEndIndex = textStartIndex + keyContent.length;
         const { row, column } = getPosition(content, textStartIndex);
 
-        const isTemplate = /`([^`]*?)`/g.test(fullMatch);
-        const isTemplateHasVar = /\$\{.*?\}/.test(fullMatch);
+        const isTemplate =
+          content[textStartIndex - 1] === '`' &&
+          content[textEndIndex + 1] === '`';
+        const isTemplateHasVar = isTemplate && /\$\{.*?\}/.test(fullMatch);
 
         i18nTextList.push({
           type: TextItemType.i18nText,

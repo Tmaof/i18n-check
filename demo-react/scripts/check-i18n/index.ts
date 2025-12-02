@@ -11,6 +11,8 @@ import { commonConf } from './config';
 import { translateI18n, TranslateResult } from './translate';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outputTempDir = path.resolve(__dirname, 'temp');
+const i18nLocalesDir = path.resolve(__dirname, '../../', 'src/i18n/locales');
+const translationFilePath = path.resolve(i18nLocalesDir, 'translates.json');
 
 if (!fs.existsSync(outputTempDir)) {
   await fsPromises.mkdir(outputTempDir, { recursive: true });
@@ -29,6 +31,8 @@ async function getExistTranslateResult() {
     cwd: outputTempDir,
     absolute: true,
   });
+
+  filePathList.push(translationFilePath);
 
   // console.log('filePathList:', filePathList);
   const translateResult: TranslateResult = {};
@@ -58,7 +62,7 @@ async function wrapI18n() {
     },
     autoImportI18nConf: {
       enable: true,
-      importCode: "import { useTranslation } from 'react-i18next';",
+      importCode: "import {t} from 'i18next';",
     },
     returnResult: false,
   });
@@ -197,7 +201,7 @@ async function addI18nTranslate() {
   if (missingTranslateTextKeyList.length) {
     console.warn(
       chalk.red(
-        `${missingTranslateTextKeyList.length} 个文本，有遗漏的没翻译的，请手动检查\n`,
+        `有 ${missingTranslateTextKeyList.length} 个文本 遗漏没翻译，请手动检查\n`,
       ),
     );
     const filePath = path.resolve(
@@ -209,10 +213,17 @@ async function addI18nTranslate() {
       JSON.stringify(missingTranslateTextKeyList, null, 2),
     );
     console.warn(chalk.yellow('遗漏的没翻译的文本已保存到：'), filePath);
-  } else {
-    console.warn(chalk.green('没有遗漏的没翻译的文本\n'));
+    return process.exit(1)
   }
-  console.warn(chalk.green('检查是否有遗漏的没翻译的文本完成。\n'));
+  console.warn(chalk.green('没有遗漏的没翻译的文本\n'));
+
+  // 生成翻译文件
+  console.warn(chalk.green('🚩 开始生成翻译文件...\n'));
+  await fsPromises.writeFile(
+    translationFilePath,
+    JSON.stringify(finalTranslateResult, null, 2),
+  );
+  console.warn(chalk.green('翻译文件已保存到：'), translationFilePath);
 }
 
 /**

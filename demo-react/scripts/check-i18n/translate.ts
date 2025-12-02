@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import chalk from 'chalk';
 import fs from 'fs/promises';
-import { callOpenAI, CallOpenAIConfig } from 'i18n-check';
+import { callOpenAI, CallOpenAIConfig,defaultResolveLLMResponse } from 'i18n-check';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -39,13 +39,18 @@ export async function translateI18n(textList: string[], apiKey: string) {
 
   const config: CallOpenAIConfig<string, TranslateResult>['aiConfig'] = {
     baseURL: 'https://api.deepseek.com',
-    model: 'deepseek-v3.2',
+    model: 'deepseek-chat',
     temperature: 0.3,
     maxTokens: 4000,
     apiKey,
+    response_format: {
+      type: 'json_object',
+    },
     systemPrompt:
       '你是一个专业的翻译专家，会严格按照格式要求进行翻译并只返回JSON结果，不会返回多余内容。结果格式为：{ [key: string]: { zh: string, en: string } }',
     generateUserPrompt,
+    // 这里使用默认的解析 LLM 响应，返回结果。你也可以自定义解析 LLM 响应，返回结果。
+    resolveLLMResponse: defaultResolveLLMResponse,
   };
 
   const { resList, errList, resListOfKeepIndex } = await callOpenAI<
@@ -54,8 +59,13 @@ export async function translateI18n(textList: string[], apiKey: string) {
   >({
     argList: textList,
     aiConfig: config,
-    batchSize: 100,
+    batchSize: 50,
+    maxConcurrent: 10,
   });
+
+  if (errList.length) {
+    console.error(errList[0]);
+  }
 
   console.warn(
     chalk.green(

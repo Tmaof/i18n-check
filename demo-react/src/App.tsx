@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+// import { useTranslation } from 'react-i18next';
+import i18n, { t } from 'i18next';
 import './App.css';
 import About from './views/about/About.tsx';
 import Blog from './views/blog/Blog.tsx';
@@ -12,7 +13,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
   const [language, setLanguage] = useState('zh');
-  const { t, i18n } = useTranslation();
+  // const { t, i18n } = useTranslation();
   const navigate = (page: Page) => {
     setCurrentPage(page);
     setSelectedPost(null);
