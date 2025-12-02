@@ -115,21 +115,21 @@ async function addI18nTranslate() {
   );
   console.warn(chalk.green('i18n.t 检测结果已保存到：'), textKeyListSavePath);
 
-  // 检查 i18nTextKeyList 中的文本，是否有 模版字符串。
-  console.warn(
-    chalk.green('🚩 开始检查 i18nTextKeyList 中的文本，是否有模版字符串 ...\n'),
-  );
+  // 检查 是否有包含中文的模版字符串。
+  console.warn(chalk.green('🚩 开始检查是否有包含中文的模版字符串 ...\n'));
   const templateTextKeyList: string[] = [];
-  for (const item of res.i18nTextItemList) {
+  for (const item of res.templateTextItemList) {
     item.textItems.forEach((textItem) => {
-      if (textItem.isTemplate) {
+      if (!textItem.isAllChineseInI18n) {
         templateTextKeyList.push(textItem.text);
       }
     });
   }
   if (templateTextKeyList.length) {
     console.warn(
-      chalk.yellow(`${templateTextKeyList.length} 个文本，是模版字符串。\n`),
+      chalk.yellow(
+        `${templateTextKeyList.length} 个文本是包含中文的模版字符串。\n`,
+      ),
     );
     const templateTextKeyListSavePath = path.resolve(
       outputTempDir,
@@ -213,7 +213,7 @@ async function addI18nTranslate() {
       JSON.stringify(missingTranslateTextKeyList, null, 2),
     );
     console.warn(chalk.yellow('遗漏的没翻译的文本已保存到：'), filePath);
-    return process.exit(1)
+    return process.exit(1);
   }
   console.warn(chalk.green('没有遗漏的没翻译的文本\n'));
 
