@@ -3,6 +3,12 @@ import {
   type TextItem,
   TextItemType,
 } from './extractTextFromContent';
+import {
+  getContentByRows,
+  getHandleMode,
+  getLongestOverlap,
+  HandleMode,
+} from './utils';
 
 /**
  * 添加 i18n.t 包裹
@@ -29,6 +35,7 @@ export function wrapI18n(options: {
   const result: { path: string; content: string }[] = [];
 
   for (const { path, extracted, content } of extractTextList) {
+    const handleMode = getHandleMode(path);
     const newContent = wrapTextWithI18n({
       content,
       extracted,
@@ -36,6 +43,7 @@ export function wrapI18n(options: {
       isMarkTemplateText,
       markTemplateTextComment,
       isSingleQuote,
+      handleMode,
     });
 
     result.push({
@@ -67,6 +75,7 @@ export function wrapTextWithI18n(options: {
   isMarkTemplateText?: boolean;
   markTemplateTextComment?: string;
   isSingleQuote?: boolean;
+  handleMode?: HandleMode;
 }): string {
   const {
     content,
@@ -75,6 +84,7 @@ export function wrapTextWithI18n(options: {
     isSingleQuote = true,
     isMarkTemplateText = true,
     markTemplateTextComment = '/** 此模版字符串中包含中文 */',
+    handleMode,
   } = options || {};
   // 收集所有未被 i18n 包裹的文本, 模板字符串在i18n.t 里面的加进来，需要标记处理
   const unwrappedItems: TextItem[] = [];
@@ -134,9 +144,9 @@ export function wrapTextWithI18n(options: {
         }
         return content;
 
-      case TextItemType.jsxText:
-        return `${before}{ ${i18nT}(${quote}${item.fullText}${quote}) }${after}`;
-
+      case TextItemType.jsxText: {
+        return replaceTemplateText();
+      }
       default:
         return content;
     }
@@ -162,54 +172,22 @@ export function wrapTextWithI18n(options: {
       if (isEqualSign) {
         const left = str.substring(0, equalSignIndex);
         if (!/let|const|var/.test(left)) {
-          return `${before}{ ${i18nT}(${quote}${item.text}${quote}) }${after}`;
+          return replaceTemplateText();
         }
       }
 
       return `${before}${i18nT}(${quote}${item.text}${quote})${after}`;
     }
-  }
 
-  return newContent;
-}
-
-/**
- * 获取指定行号之间的内容
- * @param startRow 开始行号
- * @param endRow 结束行号
- * @param content
- * @returns 指定行号之间的内容
- */
-export function getContentByRows(
-  startRow: number,
-  endRow: number,
-  content: string,
-): string {
-  const lines = content.split('\n');
-  let result = '';
-  for (let i = startRow; i <= endRow; i++) {
-    result += `${lines[i - 1]}\n`;
-  }
-  return result;
-}
-
-/**
- * 获取字符串1的结尾与字符串2的开头之间的最长公共重叠部分
- * @param str1 前一个字符串
- * @param str2 后一个字符串
- * @returns 最长公共重叠子串（若无则返回空字符串）
- */
-export function getLongestOverlap(str1: string, str2: string): string {
-  const maxOverlap = Math.min(str1.length, str2.length);
-
-  // 从最大可能长度开始尝试
-  for (let len = maxOverlap; len > 0; len--) {
-    const suffix = str1.slice(-len); // str1 的最后 len 个字符
-    const prefix = str2.slice(0, len); // str2 的前 len 个字符
-    if (suffix === prefix) {
-      return suffix;
+    function replaceTemplateText(): string {
+      switch (handleMode) {
+        case HandleMode.vue:
+          return `${before}{{ ${i18nT}(${quote}${item.text}${quote}) }}${after}`;
+        default:
+          return `${before}{ ${i18nT}(${quote}${item.text}${quote}) }${after}`;
+      }
     }
   }
 
-  return ''; // 无重叠
+  return newContent;
 }
