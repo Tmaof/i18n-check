@@ -30,11 +30,13 @@ import { ref } from 'vue';
 import i18n from '@/i18n';
 const cartStore = useCartStore()
 
-const language = ref<('zh' | 'en')>('zh');
+const language = ref<('zh' | 'en')>((localStorage.getItem('language') || 'zh') as 'zh' | 'en');
 const changeLanguage = () => {
   language.value = language.value === 'zh' ? 'en' : 'zh';
   // i18n.locale.value = language.value;
-  i18n.locale = language.value;
+  // i18n.locale = language.value;
+  localStorage.setItem('language', language.value);
+  window.location.reload();
 }
 </script>
 

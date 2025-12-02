@@ -23,7 +23,7 @@ function genTranslates(){
   const { zh, en } = genTranslates();
 
 export const i18nPlugin = createI18n({
-  locale:'zh',
+  locale: localStorage.getItem('language') || 'zh',
   messages:{
     zh,
     en,
