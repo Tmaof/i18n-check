@@ -172,7 +172,7 @@ export function wrapTextWithI18n(options: {
       if (isEqualSign) {
         const left = str.substring(0, equalSignIndex);
         if (!/let|const|var/.test(left)) {
-          return replaceTemplateText();
+          return replacePropsText();
         }
       }
 
@@ -183,6 +183,19 @@ export function wrapTextWithI18n(options: {
       switch (handleMode) {
         case HandleMode.vue:
           return `${before}{{ ${i18nT}(${quote}${item.text}${quote}) }}${after}`;
+        default:
+          return `${before}{ ${i18nT}(${quote}${item.text}${quote}) }${after}`;
+      }
+    }
+
+    function replacePropsText(): string {
+      switch (handleMode) {
+        case HandleMode.vue:{
+          if(isSingleQuote){
+            return `${before}"{{ ${i18nT}('${item.text}') }}"${after}`;
+          }
+          return `${before}'{{ ${i18nT}("${item.text}") }}'${after}`;
+        }
         default:
           return `${before}{ ${i18nT}(${quote}${item.text}${quote}) }${after}`;
       }
