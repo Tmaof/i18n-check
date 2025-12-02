@@ -1,19 +1,28 @@
 # i18n-check
 
-一个强大的国际化检查和处理工具，用于自动检测代码中的中文文本，并自动添加 `i18n.t()` 包裹，同时支持自动导入 i18n 模块。
+一个国际化检查和处理工具，用于自动检测代码中的中文文本，并自动添加 `i18n.t()` 包裹，同时支持自动导入 i18n 模块和AI翻译处理。
+
+## Demo
+下面是使用该工具的一些demo项目：
+
+| 框架 | 项目地址 |
+| ---- | ------ |
+| React | xxxx |
+| Vue | xxxx |
+
 
 ## ✨ 特性
 
-- 🔍 **智能检测**：自动检测代码中未被 `i18n.t()` 包裹的中文文本
-- 🎯 **自动包裹**：自动为中文文本添加 `i18n.t()` 包裹
-- 📦 **自动导入**：自动检测并导入 i18n 模块
-- 🎨 **多种文本类型支持**：
+- 🔍 **检测中文文本**：自动检测代码中未被 `i18n.t()` 包裹的中文文本
   - 字符串文本（单引号、双引号）
   - 模板字符串
   - JSX 文本
+- 🎯 **自动包裹**：自动为中文文本添加 `i18n.t()` 包裹
+- 📦 **自动导入**：自动检测并导入 i18n 模块
 - 🚫 **智能忽略**：自动忽略注释、枚举等不需要翻译的文本
 - 📝 **模板字符串标记**：自动标记包含中文的模板字符串，提醒手动处理
 - 🔑 **提取翻译 Key**：提取所有 `i18n.t()` 中的文本 key，用于生成翻译文件
+- 🤖 **AI 批量翻译**：支持调用 LLM API 进行批量翻译处理，支持分批和并发控制
 
 ## 📦 安装
 
@@ -31,9 +40,10 @@ yarn add i18n-check
 
 ```typescript
 import { i18nCheck } from 'i18n-check';
+import path from 'path';
 
 await i18nCheck({
-  rootDir: './src',
+  rootDir: path.resolve(__dirname, './src'),
   input: {
     includeFiles: ['**/*.{js,jsx,ts,tsx}'],
     excludeFiles: ['**/*.test.ts', '**/*.spec.ts'],
@@ -128,7 +138,7 @@ if (result) {
 | `input.includeFiles`                   | `string[]` | ✅   | -                                    | 包含的文件 glob 表达式           |
 | `input.excludeFiles`                   | `string[]` | ✅   | -                                    | 排除的文件 glob 表达式           |
 | `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                     |
-| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | `[]`                                 | 匹配 `i18n.t()` 的正则表达式列表 |
+| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表 |
 | `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式         |
 | `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置               |
 | `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                 |
@@ -141,6 +151,18 @@ if (result) {
 | `autoImportI18nConf.importCode`        | `string`   | ❌   | `"import i18n from '@/utils/i18n';"` | 导入语句                         |
 | `returnResult`                         | `boolean`  | ❌   | `false`                              | 是否返回结果                     |
 
+
+- `extractTextConf.i18nRegexList` 的默认值：
+
+```
+[
+  // 注意：我们用 [,)] 而不是 $，就是为了支持 i18n.t('xxx', ...) 这种多参数形式。
+  /i18n\.t\s*\(\s*'((?:[^'\\\n\r]|\\.)*?)'\s*[,)]/g,
+  /i18n\.t\s*\(\s*"((?:[^"\\\n\r]|\\.)*?)"\s*[,)]/g,
+  /i18n\.t\s*\(\s*`((?:[^`\\\n\r]|\\.)*?)`\s*[,)]/g,
+]
+```
+
 #### 返回值
 
 ##### `I18nCheckRes`
@@ -150,6 +172,70 @@ if (result) {
 | `i18nTextItemList`     | `Array<{ path: string; textItems: TextItem[] }>` | 被 `i18n.t()` 包裹的文本列表      |
 | `i18nTextKeyList`      | `string[]`                                       | 被 `i18n.t()` 包裹的文本 key 列表 |
 | `templateTextItemList` | `Array<{ path: string; textItems: TextItem[] }>` | 模板字符串（且其中包含中文）列表  |
+
+### `callOpenAISingle<R>(config: CallOpenAISingleConfig<R>): Promise<R>`
+
+调用 LLM API 进行单次处理。
+
+#### 参数
+
+##### `CallOpenAISingleConfig<R>`
+
+| 属性                 | 类型                               | 必填 | 默认值                      | 说明                                      |
+| -------------------- | ---------------------------------- | ---- | --------------------------- | ----------------------------------------- |
+| `baseURL`            | `string`                           | ✅   | -                           | LLM API 的基础 URL                        |
+| `model`              | `string`                           | ✅   | -                           | 使用的模型名称                            |
+| `temperature`        | `number`                           | ✅   | -                           | 控制生成文本的随机性（0-1，值越高越随机） |
+| `maxTokens`          | `number`                           | ✅   | -                           | 生成的最大 token 数                       |
+| `userPrompt`         | `string`                           | ✅   | -                           | 用户提示词                                |
+| `systemPrompt`       | `string`                           | ✅   | -                           | 系统提示词                                |
+| `apiKey`             | `string`                           | ✅   | -                           | API Key                                   |
+| `timeout`            | `number`                           | ❌   | `120000`                    | 超时时间（毫秒）                          |
+| `resolveLLMResponse` | `(response: LLMResponseBody) => R` | ❌   | `defaultResolveLLMResponse` | 解析 LLM 响应的函数                       |
+
+#### 返回值
+
+返回解析后的结果，类型为 `R`。
+
+### `callOpenAI<T, R>(config: CallOpenAIConfig<T, R>): Promise<{ resList: R[]; errList: Error[]; resListOfKeepIndex: (R | Error)[] }>`
+
+调用 LLM API 进行批量处理，支持分批和并发控制。
+
+#### 参数
+
+##### `CallOpenAIConfig<T, R>`
+
+| 属性                          | 类型                                                    | 必填 | 默认值 | 说明                 |
+| ----------------------------- | ------------------------------------------------------- | ---- | ------ | -------------------- |
+| `argList`                     | `T[]`                                                   | ✅   | -      | 待处理的参数列表     |
+| `aiConfig`                    | `Omit<CallOpenAISingleConfig<R>, 'userPrompt'> & {...}` | ✅   | -      | AI 配置              |
+| `aiConfig.generateUserPrompt` | `(shardedArgList: T[]) => string \| Promise<string>`    | ✅   | -      | 生成用户提示词的函数 |
+| `batchSize`                   | `number`                                                | ❌   | `50`   | 每批处理的数量       |
+| `maxConcurrent`               | `number`                                                | ❌   | `10`   | 最大并发数           |
+
+#### 返回值
+
+| 属性                 | 类型             | 说明                         |
+| -------------------- | ---------------- | ---------------------------- |
+| `resList`            | `R[]`            | 成功的结果列表（按完成顺序） |
+| `errList`            | `Error[]`        | 错误列表                     |
+| `resListOfKeepIndex` | `(R \| Error)[]` | 保持原始索引的结果列表       |
+
+### `multiRequest<T, R>(argList: T[], task: Function, maxNum?: number): Promise<{ resList: R[]; errList: Error[]; resListOfKeepIndex: (R \| Error)[] }>`
+
+并发处理工具函数，用于控制并发数量。
+
+#### 参数
+
+| 属性      | 类型                                                                       | 必填 | 默认值 | 说明             |
+| --------- | -------------------------------------------------------------------------- | ---- | ------ | ---------------- |
+| `argList` | `T[]`                                                                      | ✅   | -      | 待处理的参数列表 |
+| `task`    | `(arg: T, index: number, count: number, total: number) => R \| Promise<R>` | ✅   | -      | 处理任务的函数   |
+| `maxNum`  | `number`                                                                   | ❌   | `5`    | 最大并发数       |
+
+#### 返回值
+
+与 `callOpenAI` 相同。
 
 ## 🎯 使用场景
 
@@ -192,6 +278,34 @@ const text = `文本 ${version}`;
 
 // 处理后
 /** 此模版字符串中包含中文 */ const text = `文本 ${version}`;
+```
+
+### 场景 5：AI 批量翻译
+
+```typescript
+import { callOpenAI } from 'i18n-check';
+
+// 批量翻译文本列表
+const textList = ['欢迎使用', '登录', '退出'];
+
+const result = await callOpenAI({
+  argList: textList,
+  batchSize: 50, // 每批处理 50 条
+  maxConcurrent: 10, // 最大并发数 10
+  aiConfig: {
+    baseURL: 'https://api.openai.com/v1',
+    model: 'gpt-3.5-turbo',
+    temperature: 0.3,
+    maxTokens: 2000,
+    apiKey: process.env.OPENAI_API_KEY!,
+    systemPrompt: '你是一个专业的翻译助手，请将中文翻译成英文。',
+    generateUserPrompt: (textList) => {
+      return `请将以下中文文本翻译成英文，返回 JSON 格式：\n${JSON.stringify(textList, null, 2)}`;
+    },
+  },
+});
+
+console.log('翻译结果:', result.resList);
 ```
 
 ## 📝 注意事项
@@ -248,7 +362,64 @@ const result = await i18nCheck({
 });
 
 // 根据结果手动处理
-console.log('未包裹的文本:', result?.i18nTextItemList);
+console.log('i18n.t 包裹的文本:', result?.i18nTextItemList);
+```
+
+### AI 批量翻译
+
+#### 单次调用
+
+```typescript
+import { callOpenAISingle } from 'i18n-check';
+
+const result = await callOpenAISingle({
+  baseURL: 'https://api.openai.com/v1',
+  model: 'gpt-3.5-turbo',
+  temperature: 0.3,
+  maxTokens: 2000,
+  apiKey: process.env.OPENAI_API_KEY!,
+  systemPrompt: '你是一个专业的翻译助手。',
+  userPrompt: '请将"欢迎使用"翻译成英文',
+  timeout: 120000, // 超时时间（毫秒）
+});
+
+console.log('翻译结果:', result);
+```
+
+#### 批量调用（推荐）
+
+```typescript
+import { callOpenAI } from 'i18n-check';
+
+const textList = ['欢迎使用', '登录', '退出'];
+
+const result = await callOpenAI({
+  argList: textList,
+  batchSize: 50, // 每批处理数量
+  maxConcurrent: 10, // 最大并发数
+  aiConfig: {
+    baseURL: 'https://api.openai.com/v1',
+    model: 'gpt-3.5-turbo',
+    temperature: 0.3,
+    maxTokens: 2000,
+    apiKey: process.env.OPENAI_API_KEY!,
+    systemPrompt: '你是一个专业的翻译助手，请将中文翻译成英文。',
+    generateUserPrompt: (shardedArgList) => {
+      return `请将以下中文文本翻译成英文，返回 JSON 格式数组：\n${JSON.stringify(shardedArgList, null, 2)}`;
+    },
+    // 自定义响应解析（可选）
+    resolveLLMResponse: (response) => {
+      const content = response.choices[0].message.content.trim();
+      // 解析 JSON 并返回
+      return JSON.parse(content);
+    },
+  },
+});
+
+// 处理结果
+console.log('成功结果:', result.resList);
+console.log('错误列表:', result.errList);
+console.log('保持索引的结果:', result.resListOfKeepIndex);
 ```
 
 ## 📚 相关导出
@@ -258,6 +429,10 @@ console.log('未包裹的文本:', result?.i18nTextItemList);
 - `extractTextFromContent`: 从代码内容中提取文本
 - `wrapI18n`: 包裹 i18n.t()
 - `autoImportI18n`: 自动导入 i18n
+- `callOpenAISingle`: 调用 LLM API 进行单次处理
+- `callOpenAI`: 调用 LLM API 进行批量处理（支持分批和并发）
+- `multiRequest`: 并发处理工具函数
+- `defaultResolveLLMResponse`: 默认解析 LLM 响应（提取 JSON 内容）
 
 ## 🤝 贡献
 
@@ -266,10 +441,6 @@ console.log('未包裹的文本:', result?.i18nTextItemList);
 ## 📄 许可证
 
 MIT
-
-## 👤 作者
-
-maofu.tian
 
 ---
 
