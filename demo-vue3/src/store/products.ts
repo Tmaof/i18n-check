@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+// import { useI18n } from 'vue-i18n';
+import i18n from '@/i18n';
 
 export interface Product {
   id: number;
@@ -12,6 +14,7 @@ export interface Product {
 }
 
 export const useProductsStore = defineStore('products', () => {
+  // const i18n = useI18n();
   const products = ref<Product[]>([
     {
       id: 1,
@@ -20,8 +23,8 @@ export const useProductsStore = defineStore('products', () => {
       image:
         'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
       description:
-        '最新款 iPhone，配备 A17 Pro 芯片，钛金属设计，专业级摄影系统。',
-      category: '手机',
+        i18n.t('最新款 iPhone，配备 A17 Pro 芯片，钛金属设计，专业级摄影系统。'),
+      category: i18n.t('手机'),
       stock: 50,
     },
     {

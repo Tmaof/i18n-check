@@ -2,16 +2,21 @@
   <nav class="navbar">
     <div class="nav-container">
       <router-link to="/" class="logo">
-        <h1>🛍️ 商城</h1>
+        <h1>🛍️ {{ i18n.t('商城') }}</h1>
       </router-link>
       <div class="nav-links">
-        <router-link to="/" class="nav-link">首页</router-link>
+        <router-link to="/" class="nav-link">{{ $t('首页') }}</router-link>
         <router-link to="/cart" class="nav-link cart-link">
-          <span>购物车</span>
+          <span>{{ $t('购物车') }}</span>
           <span v-if="cartStore.totalItems > 0" class="cart-badge">
             {{ cartStore.totalItems }}
           </span>
         </router-link>
+        <span>
+          <span @click="changeLanguage">
+            {{ language === 'zh' ? 'English' : '中文' }}
+          </span>
+        </span>
       </div>
     </div>
   </nav>
@@ -19,8 +24,18 @@
 
 <script setup lang="ts">
 import { useCartStore } from '../store/cart';
-
+import { ref } from 'vue';
+// import { useI18n } from 'vue-i18n';
+// const i18n = useI18n();
+import i18n from '@/i18n';
 const cartStore = useCartStore()
+
+const language = ref<('zh' | 'en')>('zh');
+const changeLanguage = () => {
+  language.value = language.value === 'zh' ? 'en' : 'zh';
+  // i18n.locale.value = language.value;
+  i18n.locale = language.value;
+}
 </script>
 
 <style scoped>
