@@ -13,6 +13,9 @@
   "bugs": {
     "url": "https://github.com/Tmaof/i18n-check/issues"
   },
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "build:types": "npx tsc -p tsconfig.types.json",
