@@ -31,21 +31,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import ProductCard from '../components/ProductCard.vue'
-import { useProductsStore } from '../store/products'
+import { computed, ref } from 'vue';
+import ProductCard from '../components/ProductCard.vue';
+import { useProductsStore } from '../store/products';
 
-const productsStore = useProductsStore()
-const selectedCategory = ref<string>('')
+const productsStore = useProductsStore();
+const selectedCategory = ref<string>('');
 
 const categories = computed(() => {
-  const cats = new Set(productsStore.products.map(p => p.category))
-  return ['', ...Array.from(cats)]
-})
+  const cats = new Set(productsStore.products.map((p) => p.category));
+  return ['', ...Array.from(cats)];
+});
 
 const filteredProducts = computed(() => {
-  return productsStore.getProductsByCategory(selectedCategory.value)
-})
+  return productsStore.getProductsByCategory(selectedCategory.value);
+});
 </script>
 
 <style scoped>
@@ -129,4 +129,3 @@ const filteredProducts = computed(() => {
   }
 }
 </style>
-

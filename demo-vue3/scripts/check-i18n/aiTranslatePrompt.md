@@ -25,7 +25,6 @@ interface TranslateResult {
 
 注意：请务必确保 `key` 就是原来数组中的每一项字符串。
 
-
 #### 例子
 
 给你下面的数组：
@@ -38,8 +37,8 @@ interface TranslateResult {
   'IP',
   'Software Reverse Proxy',
   '{param} 为必填项',
-  '{param1} [{param3}最后修改时间：{param2}]'
-]
+  '{param1} [{param3}最后修改时间：{param2}]',
+];
 ```
 
 你只需要返回 Json 格式的数据如下：
@@ -82,4 +81,5 @@ interface TranslateResult {
 ```
 
 注意：
+
 - 你只需要返回`json`格式的数据即可，就像调用 API 返回结果那样，你不需要将 json 结果包裹在代码块或者 md 中。

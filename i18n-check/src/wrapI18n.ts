@@ -190,8 +190,8 @@ export function wrapTextWithI18n(options: {
 
     function replacePropsText(): string {
       switch (handleMode) {
-        case HandleMode.vue:{
-          if(isSingleQuote){
+        case HandleMode.vue: {
+          if (isSingleQuote) {
             return `${before}"{{ ${i18nT}('${item.text}') }}"${after}`;
           }
           return `${before}'{{ ${i18nT}("${item.text}") }}'${after}`;

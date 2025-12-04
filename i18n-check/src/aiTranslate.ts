@@ -263,7 +263,7 @@ export async function callOpenAI<T, R>(
     console.warn(chalk.green(`开始处理索引为 ${index} 的任务\n`));
     const userPrompt = await aiConfig.generateUserPrompt(item);
     const res = await callOpenAISingle<R>({
-      ...(aiConfig),
+      ...aiConfig,
       userPrompt,
     });
     return res;

@@ -64,7 +64,7 @@ async function wrapI18n() {
       enable: true,
       importCode: "import { t } from 'i18next';",
     },
-    isWriteFile: true
+    isWriteFile: true,
   });
   console.warn(chalk.green('包裹 i18n.t() 完成\n'));
   console.warn(
@@ -93,7 +93,7 @@ async function addI18nTranslate() {
     },
     autoImportI18nConf: {
       enable: false,
-    }
+    },
   });
 
   if (!res.i18nTextKeyList.length) {

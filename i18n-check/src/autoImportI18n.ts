@@ -43,7 +43,7 @@ export function importI18n(options: {
   }
 
   switch (handleMode) {
-    case HandleMode.vue:{
+    case HandleMode.vue: {
       const [{ end }] = findScriptOpeningTags(content);
       const before = content.substring(0, end);
       const after = content.substring(end);

@@ -14,19 +14,38 @@
           <form @submit.prevent="handleSubmit">
             <div class="form-group">
               <label>收货人姓名</label>
-              <input v-model="form.name" type="text" required placeholder="请输入收货人姓名" />
+              <input
+                v-model="form.name"
+                type="text"
+                required
+                placeholder="请输入收货人姓名"
+              />
             </div>
             <div class="form-group">
               <label>联系电话</label>
-              <input v-model="form.phone" type="tel" required placeholder="请输入联系电话" />
+              <input
+                v-model="form.phone"
+                type="tel"
+                required
+                placeholder="请输入联系电话"
+              />
             </div>
             <div class="form-group">
               <label>收货地址</label>
-              <textarea v-model="form.address" required placeholder="请输入详细收货地址" rows="3"></textarea>
+              <textarea
+                v-model="form.address"
+                required
+                placeholder="请输入详细收货地址"
+                rows="3"
+              ></textarea>
             </div>
             <div class="form-group">
               <label>备注</label>
-              <textarea v-model="form.notes" placeholder="选填：订单备注信息" rows="3"></textarea>
+              <textarea
+                v-model="form.notes"
+                placeholder="选填：订单备注信息"
+                rows="3"
+              ></textarea>
             </div>
           </form>
         </div>
@@ -44,7 +63,9 @@
                 <h4>{{ item.name }}</h4>
                 <p>¥{{ item.price.toLocaleString() }} × {{ item.quantity }}</p>
               </div>
-              <span class="item-total">¥{{ (item.price * item.quantity).toLocaleString() }}</span>
+              <span class="item-total"
+                >¥{{ (item.price * item.quantity).toLocaleString() }}</span
+              >
             </div>
           </div>
 
@@ -59,11 +80,17 @@
             </div>
             <div class="summary-row total">
               <span>总计：</span>
-              <span class="total-price">¥{{ cartStore.totalPrice.toLocaleString() }}</span>
+              <span class="total-price"
+                >¥{{ cartStore.totalPrice.toLocaleString() }}</span
+              >
             </div>
           </div>
 
-          <button @click="handleSubmit" class="submit-btn" :disabled="submitting">
+          <button
+            @click="handleSubmit"
+            class="submit-btn"
+            :disabled="submitting"
+          >
             {{ submitting ? '提交中...' : '提交订单' }}
           </button>
         </div>
@@ -73,39 +100,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCartStore } from '../store/cart'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useCartStore } from '../store/cart';
 
-const router = useRouter()
-const cartStore = useCartStore()
-const submitting = ref(false)
+const router = useRouter();
+const cartStore = useCartStore();
+const submitting = ref(false);
 
 const form = ref({
   name: '',
   phone: '',
   address: '',
-  notes: ''
-})
+  notes: '',
+});
 
 function handleSubmit() {
-  if (submitting.value) return
+  if (submitting.value) return;
 
-  submitting.value = true
+  submitting.value = true;
 
   // 模拟提交订单
   setTimeout(() => {
-    alert('订单提交成功！\n\n订单信息：\n' +
-      `收货人：${form.value.name}\n` +
-      `电话：${form.value.phone}\n` +
-      `地址：${form.value.address}\n` +
-      `总金额：¥${cartStore.totalPrice.toLocaleString()}\n\n` +
-      '感谢您的购买！')
+    alert(
+      '订单提交成功！\n\n订单信息：\n' +
+        `收货人：${form.value.name}\n` +
+        `电话：${form.value.phone}\n` +
+        `地址：${form.value.address}\n` +
+        `总金额：¥${cartStore.totalPrice.toLocaleString()}\n\n` +
+        '感谢您的购买！',
+    );
 
-    cartStore.clearCart()
-    submitting.value = false
-    router.push('/')
-  }, 1000)
+    cartStore.clearCart();
+    submitting.value = false;
+    router.push('/');
+  }, 1000);
 }
 </script>
 
@@ -292,7 +321,9 @@ function handleSubmit() {
   font-weight: 600;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: opacity 0.3s, transform 0.2s;
+  transition:
+    opacity 0.3s,
+    transform 0.2s;
 }
 
 .submit-btn:hover:not(:disabled) {
@@ -315,4 +346,3 @@ function handleSubmit() {
   }
 }
 </style>
-

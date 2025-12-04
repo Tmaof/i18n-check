@@ -2,10 +2,10 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import translates from './locales/translates.json';
 
-function genTranslates(){
+function genTranslates() {
   const zh: Record<string, string> = {};
   const en: Record<string, string> = {};
-  Object.keys(translates).forEach(key => {
+  Object.keys(translates).forEach((key) => {
     const value = translates[key as keyof typeof translates];
     if (value.zh) {
       zh[key] = value.zh;

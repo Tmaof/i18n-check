@@ -58,7 +58,9 @@ const Home = ({ onNavigate }: HomeProps) => {
               <br />
               在这里记录我的学习与思考
             </p>
-            <p className="hero-subtitle">{t('欢迎，{{name}}！', { name: '用户' })}</p>
+            <p className="hero-subtitle">
+              {t('欢迎，{{name}}！', { name: '用户' })}
+            </p>
             <div className="hero-buttons">
               <button
                 className="btn btn-primary"

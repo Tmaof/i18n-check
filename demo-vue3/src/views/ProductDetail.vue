@@ -10,15 +10,28 @@
         <p class="description">{{ product.description }}</p>
         <div class="price-section">
           <span class="price">¥{{ product.price.toLocaleString() }}</span>
-          <span class="stock" :class="{ 'low-stock': product.stock < 10, 'out-of-stock': product.stock === 0 }">
+          <span
+            class="stock"
+            :class="{
+              'low-stock': product.stock < 10,
+              'out-of-stock': product.stock === 0,
+            }"
+          >
             {{ product.stock === 0 ? '缺货' : `库存: ${product.stock}` }}
           </span>
         </div>
         <div class="actions">
           <div class="quantity-selector">
-            <button @click="decreaseQuantity" :disabled="quantity <= 1">-</button>
+            <button @click="decreaseQuantity" :disabled="quantity <= 1">
+              -
+            </button>
             <span>{{ quantity }}</span>
-            <button @click="increaseQuantity" :disabled="quantity >= product.stock">+</button>
+            <button
+              @click="increaseQuantity"
+              :disabled="quantity >= product.stock"
+            >
+              +
+            </button>
           </div>
           <button
             @click="handleAddToCart"
@@ -53,32 +66,32 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useCartStore } from '../store/cart'
-import { useProductsStore } from '../store/products'
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useCartStore } from '../store/cart';
+import { useProductsStore } from '../store/products';
 
-const route = useRoute()
-const router = useRouter()
-const productsStore = useProductsStore()
-const cartStore = useCartStore()
+const route = useRoute();
+const router = useRouter();
+const productsStore = useProductsStore();
+const cartStore = useCartStore();
 
-const quantity = ref(1)
+const quantity = ref(1);
 
 const product = computed(() => {
-  const id = Number(route.params.id)
-  return productsStore.getProductById(id)
-})
+  const id = Number(route.params.id);
+  return productsStore.getProductById(id);
+});
 
 function increaseQuantity() {
   if (product.value && quantity.value < product.value.stock) {
-    quantity.value++
+    quantity.value++;
   }
 }
 
 function decreaseQuantity() {
   if (quantity.value > 1) {
-    quantity.value--
+    quantity.value--;
   }
 }
 
@@ -89,18 +102,18 @@ function handleAddToCart() {
         id: product.value.id,
         name: product.value.name,
         price: product.value.price,
-        image: product.value.image
-      })
+        image: product.value.image,
+      });
     }
-    quantity.value = 1
+    quantity.value = 1;
   }
 }
 
 onMounted(() => {
   if (!product.value) {
-    router.push('/')
+    router.push('/');
   }
-})
+});
 </script>
 
 <style scoped>
@@ -239,7 +252,9 @@ onMounted(() => {
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.3s, transform 0.2s;
+  transition:
+    opacity 0.3s,
+    transform 0.2s;
 }
 
 .add-to-cart-btn:hover:not(.disabled) {
@@ -311,4 +326,3 @@ onMounted(() => {
   }
 }
 </style>
-

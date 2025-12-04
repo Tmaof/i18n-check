@@ -9,7 +9,9 @@
         <h3 class="product-name">{{ product.name }}</h3>
         <p class="product-description">{{ product.description }}</p>
         <div class="product-footer">
-          <span class="product-price">¥{{ product.price.toLocaleString() }}</span>
+          <span class="product-price"
+            >¥{{ product.price.toLocaleString() }}</span
+          >
           <span class="product-category">{{ product.category }}</span>
         </div>
       </div>
@@ -30,11 +32,11 @@ import { useCartStore } from '../store/cart';
 import type { Product } from '../store/products';
 
 interface Props {
-  product: Product
+  product: Product;
 }
 
-const props = defineProps<Props>()
-const cartStore = useCartStore()
+const props = defineProps<Props>();
+const cartStore = useCartStore();
 
 function handleAddToCart() {
   if (props.product.stock > 0) {
@@ -42,8 +44,8 @@ function handleAddToCart() {
       id: props.product.id,
       name: props.product.name,
       price: props.product.price,
-      image: props.product.image
-    })
+      image: props.product.image,
+    });
   }
 }
 </script>
@@ -54,7 +56,9 @@ function handleAddToCart() {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
   display: flex;
   flex-direction: column;
 }
@@ -159,7 +163,9 @@ function handleAddToCart() {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.3s, transform 0.2s;
+  transition:
+    opacity 0.3s,
+    transform 0.2s;
 }
 
 .add-to-cart-btn:hover:not(.disabled) {
@@ -172,4 +178,3 @@ function handleAddToCart() {
   cursor: not-allowed;
 }
 </style>
-

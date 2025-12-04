@@ -22,8 +22,9 @@ export const useProductsStore = defineStore('products', () => {
       price: 8999,
       image:
         'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
-      description:
-        i18n.t('最新款 iPhone，配备 A17 Pro 芯片，钛金属设计，专业级摄影系统。'),
+      description: i18n.t(
+        '最新款 iPhone，配备 A17 Pro 芯片，钛金属设计，专业级摄影系统。',
+      ),
       category: i18n.t('手机'),
       stock: 50,
     },

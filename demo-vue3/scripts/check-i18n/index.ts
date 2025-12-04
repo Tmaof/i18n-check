@@ -93,7 +93,7 @@ async function addI18nTranslate() {
     },
     autoImportI18nConf: {
       enable: false,
-    }
+    },
   });
 
   if (!res.i18nTextKeyList.length) {

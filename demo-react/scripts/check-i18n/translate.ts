@@ -1,7 +1,11 @@
 /* eslint-disable no-console */
 import chalk from 'chalk';
 import fs from 'fs/promises';
-import { callOpenAI, CallOpenAIConfig,defaultResolveLLMResponse } from 'i18n-check';
+import {
+  callOpenAI,
+  CallOpenAIConfig,
+  defaultResolveLLMResponse,
+} from 'i18n-check';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

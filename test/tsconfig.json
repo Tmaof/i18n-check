@@ -22,10 +22,6 @@
     "esModuleInterop": true, // 启用 ES 模块互操作性
     "skipLibCheck": true // 跳过库文件类型检查
   },
-  "include": [
-    "**/*.test.ts"
-  ],
-  "exclude": [
-    "**/case*/"
-  ]
+  "include": ["**/*.test.ts"],
+  "exclude": ["**/case*/"]
 }

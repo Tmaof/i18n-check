@@ -10,11 +10,7 @@
 
       <div v-else class="cart-content">
         <div class="cart-items">
-          <div
-            v-for="item in cartStore.items"
-            :key="item.id"
-            class="cart-item"
-          >
+          <div v-for="item in cartStore.items" :key="item.id" class="cart-item">
             <img :src="item.image" :alt="item.name" class="item-image" />
             <div class="item-info">
               <h3>{{ item.name }}</h3>
@@ -39,7 +35,9 @@
           </div>
           <div class="summary-row total">
             <span>总计：</span>
-            <span class="total-price">¥{{ cartStore.totalPrice.toLocaleString() }}</span>
+            <span class="total-price"
+              >¥{{ cartStore.totalPrice.toLocaleString() }}</span
+            >
           </div>
           <router-link to="/checkout" class="checkout-btn">
             去结算
@@ -51,28 +49,28 @@
 </template>
 
 <script setup lang="ts">
-import { useCartStore } from '../store/cart'
+import { useCartStore } from '../store/cart';
 
-const cartStore = useCartStore()
+const cartStore = useCartStore();
 
 function increaseQuantity(productId: number) {
-  const item = cartStore.items.find(item => item.id === productId)
+  const item = cartStore.items.find((item) => item.id === productId);
   if (item) {
-    cartStore.updateQuantity(productId, item.quantity + 1)
+    cartStore.updateQuantity(productId, item.quantity + 1);
   }
 }
 
 function decreaseQuantity(productId: number) {
-  const item = cartStore.items.find(item => item.id === productId)
+  const item = cartStore.items.find((item) => item.id === productId);
   if (item && item.quantity > 1) {
-    cartStore.updateQuantity(productId, item.quantity - 1)
+    cartStore.updateQuantity(productId, item.quantity - 1);
   } else if (item) {
-    cartStore.removeFromCart(productId)
+    cartStore.removeFromCart(productId);
   }
 }
 
 function removeItem(productId: number) {
-  cartStore.removeFromCart(productId)
+  cartStore.removeFromCart(productId);
 }
 </script>
 
@@ -261,7 +259,9 @@ function removeItem(productId: number) {
   border-radius: 8px;
   font-weight: 600;
   font-size: 1.1rem;
-  transition: opacity 0.3s, transform 0.2s;
+  transition:
+    opacity 0.3s,
+    transform 0.2s;
 }
 
 .checkout-btn:hover {
@@ -296,4 +296,3 @@ function removeItem(productId: number) {
   }
 }
 </style>
-
