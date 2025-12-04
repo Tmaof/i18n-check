@@ -89,6 +89,10 @@ const title = t('首页');
 const message = /** 此模版字符串中包含中文 */ `欢迎，${userName}！`;
 ```
 
+例子：
+
+![示例](public/img/demo-react-img1.png)
+
 #### 2. 手动检查和调整
 
 **重要**：执行第一步后，必须手动检查每一处修改：
