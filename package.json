@@ -5,6 +5,7 @@
   "type": "module",
   "author": "maofu.tian",
   "scripts": {
+    "test": "pnpm -C test run test",
     "start:demo-react": "pnpm -C demo-react run dev",
     "build:check": "pnpm -C build run build:check",
     "build": "pnpm -r run build",
@@ -29,5 +30,8 @@
     "globals": "^16.3.0",
     "prettier": "3.6.2",
     "typescript-eslint": "^8.35.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

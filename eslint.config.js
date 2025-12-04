@@ -10,7 +10,7 @@ import tseslint from 'typescript-eslint';
 import eslintRule from './eslint-rule/index.cjs';
 
 export default tseslint.config([
-  globalIgnores(['**/dist/**', '**/*.d.ts']),
+  globalIgnores(['**/dist/**', '**/*.d.ts', 'test/**/case*/']),
   ...nodeDependenciesPlugin.configs['flat/recommended'],
   {
     files: ['**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}'],

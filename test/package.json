@@ -1,0 +1,15 @@
+{
+  "name": "test-i18n-check",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "author": "maofu.tian",
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.15",
+    "i18n-check": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

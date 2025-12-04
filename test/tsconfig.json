@@ -4,11 +4,6 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "ESNext",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./src/*"]
-    },
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -28,7 +23,9 @@
     "skipLibCheck": true // 跳过库文件类型检查
   },
   "include": [
-    "src",
-    "index.ts"
+    "**/*.test.ts"
+  ],
+  "exclude": [
+    "**/case*/"
   ]
 }

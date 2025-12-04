@@ -3,6 +3,7 @@ packages:
   - demo-react
   - demo-vue3
   - build
+  - test
 
 # https://pnpm.io/catalogs
 # pnpm 版本 >= 9.5.0

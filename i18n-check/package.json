@@ -6,6 +6,7 @@
   "type": "module",
   "author": "maofu.tian",
   "scripts": {
+    "test": "vitest",
     "clean": "rimraf dist",
     "build:types": "npx tsc -p tsconfig.types.json",
     "build": "tsx build/index.ts"

@@ -1,0 +1,2 @@
+# 忽略所有 test/**/case* 目录
+test/**/case*/
