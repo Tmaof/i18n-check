@@ -1,6 +1,6 @@
 {
   "name": "i18n-check",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "一个国际化检查和处理工具，用于自动检测代码中的中文文本，并自动添加 `i18n.t()` 包裹，同时支持自动导入 i18n 模块和 AI 翻译处理。",
   "private": false,
   "type": "module",
