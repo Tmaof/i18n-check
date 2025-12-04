@@ -320,6 +320,135 @@ console.log('翻译结果:', result.resList);
 
 4. **文件备份**：建议在执行自动包裹前备份代码，或使用版本控制系统。
 
+## ⚠️ 已知限制
+
+该工具基于正则匹配进行内容处理，以下情况无法正常包裹 `i18n.t()`，需要在处理完成后手动进行检查和修正：
+
+### 例子 1：函数参数默认值中的对象属性
+
+**原内容：**
+
+```typescript
+export const ActiveDeactivateButtons = ({
+  activeText = '激活',
+  deactivateText = '退出',
+  onActivate,
+  onDeactivate
+}: {
+  activeText?: string;
+  deactivateText?: string;
+  onActivate: () => void;
+  onDeactivate: () => void;
+}) => {
+  return (
+    <div>
+    </div>
+  );
+};
+```
+
+**处理后（错误）：**
+
+```typescript
+export const ActiveDeactivateButtons = ({
+  activeText = i18n.t('激活'),
+  deactivateText = { i18n.t('退出') },  // ❌ 错误：不应该有花括号
+  onActivate,
+  onDeactivate
+}: {
+  activeText?: string;
+  deactivateText?: string;
+  onActivate: () => void;
+  onDeactivate: () => void;
+}) => {
+  return (
+    <div>
+    </div>
+  );
+};
+```
+
+**正确结果应为：**
+
+```typescript
+export const ActiveDeactivateButtons = ({
+  activeText = i18n.t('激活'),
+  deactivateText = i18n.t('退出'),  // ✅ 正确
+  onActivate,
+  onDeactivate
+}: {
+  activeText?: string;
+  deactivateText?: string;
+  onActivate: () => void;
+  onDeactivate: () => void;
+}) => {
+  return (
+    <div>
+    </div>
+  );
+};
+```
+
+### 例子 2：条件语句中的赋值
+
+**原内容：**
+
+```typescript
+let title = '';
+if (true) {
+  title = '哈哈哈';
+}
+```
+
+**处理后（错误）：**
+
+```typescript
+let title = '';
+if(true){
+  title = { i18n.t('哈哈哈') }  // ❌ 错误：不应该有花括号
+}
+```
+
+**正确结果应为：**
+
+```typescript
+let title = '';
+if (true) {
+  title = i18n.t('哈哈哈'); // ✅ 正确
+}
+```
+
+### 例子 3：JSX 文本在字符串中
+
+**原内容：**
+
+```tsx
+<div className="code-line indent">
+  <span className="code-property">name</span>:{' '}
+  <span className="code-string">'开发者'</span>,
+</div>
+```
+
+**处理后（错误）：**
+
+```tsx
+<div className="code-line indent">
+  <span className="code-property">name</span>:{' '}
+  <span className="code-string">t('开发者')</span>, // ❌
+  错误：不应该直接调用函数
+</div>
+```
+
+**正确结果应为：**
+
+```tsx
+<div className="code-line indent">
+  <span className="code-property">name</span>:{' '}
+  <span className="code-string">{i18n.t('开发者')}</span>, // ✅ 正确：需要使用
+  JSX 表达式
+</div>
+```
+
 ## 🔧 高级用法
 
 ### 自定义 i18n 调用方式
