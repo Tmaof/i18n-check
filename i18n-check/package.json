@@ -1,12 +1,19 @@
 {
   "name": "i18n-check",
   "version": "1.0.0",
-  "description": "A powerful i18n checking and processing tool that automatically detects Chinese text in code and wraps it with i18n.t()",
+  "description": "一个国际化检查和处理工具，用于自动检测代码中的中文文本，并自动添加 `i18n.t()` 包裹，同时支持自动导入 i18n 模块和 AI 翻译处理。",
   "private": false,
   "type": "module",
   "author": "maofu.tian",
+  "homepage": "https://github.com/Tmaof/i18n-check/tree/main/i18n-check",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tmaof/i18n-check/tree/main/i18n-check"
+  },
+  "bugs": {
+    "url": "https://github.com/Tmaof/i18n-check/issues"
+  },
   "scripts": {
-    "test": "vitest",
     "clean": "rimraf dist",
     "build:types": "npx tsc -p tsconfig.types.json",
     "build": "tsx build/index.ts"

@@ -6,10 +6,10 @@
 
 下面是使用该工具的一些demo项目：
 
-| 框架  | 项目地址 |
-| ----- | -------- |
-| React | xxxx     |
-| Vue   | xxxx     |
+| 框架  | 项目地址                                                             |
+| ----- | -------------------------------------------------------------------- |
+| React | [仓库地址](https://github.com/Tmaof/i18n-check/tree/main/demo-react) |
+| Vue   | [仓库地址](https://github.com/Tmaof/i18n-check/tree/main/demo-vue3)  |
 
 ## ✨ 特性
 
