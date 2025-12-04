@@ -3,13 +3,13 @@
 一个国际化检查和处理工具，用于自动检测代码中的中文文本，并自动添加 `i18n.t()` 包裹，同时支持自动导入 i18n 模块和AI翻译处理。
 
 ## Demo
+
 下面是使用该工具的一些demo项目：
 
-| 框架 | 项目地址 |
-| ---- | ------ |
-| React | xxxx |
-| Vue | xxxx |
-
+| 框架  | 项目地址 |
+| ----- | -------- |
+| React | xxxx     |
+| Vue   | xxxx     |
 
 ## ✨ 特性
 
@@ -110,20 +110,19 @@ const result = await i18nCheck({
     importCode: "import i18n from '@/utils/i18n';", // 导入语句
   },
 
-  // 是否返回结果
-  returnResult: true,
+  // 是否写入文件
+  isWriteFile: false, // 是否将包裹和导入操作写入原文件
 });
 
-if (result) {
-  console.log('被 i18n.t 包裹的文本检测结果:', result.i18nTextItemList);
-  console.log('所有 i18n.t() 中的文本 key:', result.i18nTextKeyList);
-  console.log('模板字符串检测结果:', result.templateTextItemList);
-}
+console.log('处理后的文件内容列表:', result.pathContentList);
+console.log('被 i18n.t 包裹的文本检测结果:', result.i18nTextItemList);
+console.log('所有 i18n.t() 中的文本 key:', result.i18nTextKeyList);
+console.log('模板字符串检测结果:', result.templateTextItemList);
 ```
 
 ## 📖 API 文档
 
-### `i18nCheck(options: I18nCheckOptions): Promise<I18nCheckRes | undefined>`
+### `i18nCheck(options: I18nCheckOptions): Promise<I18nCheckRes>`
 
 主函数，执行国际化检查和处理。
 
@@ -131,26 +130,25 @@ if (result) {
 
 ##### `I18nCheckOptions`
 
-| 属性                                   | 类型       | 必填 | 默认值                               | 说明                             |
-| -------------------------------------- | ---------- | ---- | ------------------------------------ | -------------------------------- |
-| `rootDir`                              | `string`   | ✅   | -                                    | 根目录路径                       |
-| `input`                                | `object`   | ✅   | -                                    | 文件匹配配置                     |
-| `input.includeFiles`                   | `string[]` | ✅   | -                                    | 包含的文件 glob 表达式           |
-| `input.excludeFiles`                   | `string[]` | ✅   | -                                    | 排除的文件 glob 表达式           |
-| `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                     |
-| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表 |
-| `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式         |
-| `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置               |
-| `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                 |
-| `wrapI18nConf.i18nT`                   | `string`   | ❌   | `'i18n.t'`                           | i18n 调用方式                    |
-| `wrapI18nConf.isSingleQuote`           | `boolean`  | ❌   | `true`                               | 是否使用单引号                   |
-| `wrapI18nConf.isMarkTemplateText`      | `boolean`  | ❌   | `true`                               | 是否标记模板字符串               |
-| `wrapI18nConf.markTemplateTextComment` | `string`   | ❌   | `'/** 此模版字符串中包含中文 */'`    | 标记注释                         |
-| `autoImportI18nConf`                   | `object`   | ❌   | -                                    | 自动导入配置                     |
-| `autoImportI18nConf.enable`            | `boolean`  | ❌   | `true`                               | 是否启用自动导入                 |
-| `autoImportI18nConf.importCode`        | `string`   | ❌   | `"import i18n from '@/utils/i18n';"` | 导入语句                         |
-| `returnResult`                         | `boolean`  | ❌   | `false`                              | 是否返回结果                     |
-
+| 属性                                   | 类型       | 必填 | 默认值                               | 说明                                 |
+| -------------------------------------- | ---------- | ---- | ------------------------------------ | ------------------------------------ |
+| `rootDir`                              | `string`   | ✅   | -                                    | 根目录路径                           |
+| `input`                                | `object`   | ✅   | -                                    | 文件匹配配置                         |
+| `input.includeFiles`                   | `string[]` | ✅   | -                                    | 包含的文件 glob 表达式               |
+| `input.excludeFiles`                   | `string[]` | ✅   | -                                    | 排除的文件 glob 表达式               |
+| `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                         |
+| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表     |
+| `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式             |
+| `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置                   |
+| `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                     |
+| `wrapI18nConf.i18nT`                   | `string`   | ❌   | `'i18n.t'`                           | i18n 调用方式                        |
+| `wrapI18nConf.isSingleQuote`           | `boolean`  | ❌   | `true`                               | 是否使用单引号                       |
+| `wrapI18nConf.isMarkTemplateText`      | `boolean`  | ❌   | `true`                               | 是否标记模板字符串                   |
+| `wrapI18nConf.markTemplateTextComment` | `string`   | ❌   | `'/** 此模版字符串中包含中文 */'`    | 标记注释                             |
+| `autoImportI18nConf`                   | `object`   | ❌   | -                                    | 自动导入配置                         |
+| `autoImportI18nConf.enable`            | `boolean`  | ❌   | `true`                               | 是否启用自动导入                     |
+| `autoImportI18nConf.importCode`        | `string`   | ❌   | `"import i18n from '@/utils/i18n';"` | 导入语句                             |
+| `isWriteFile`                          | `boolean`  | ❌   | `false`                              | 包裹操作和自动导入操作是否写入原文件 |
 
 - `extractTextConf.i18nRegexList` 的默认值：
 
@@ -169,6 +167,7 @@ if (result) {
 
 | 属性                   | 类型                                             | 说明                              |
 | ---------------------- | ------------------------------------------------ | --------------------------------- |
+| `pathContentList`      | `Array<{ path: string; content: string }>`       | 处理后的文件内容列表              |
 | `i18nTextItemList`     | `Array<{ path: string; textItems: TextItem[] }>` | 被 `i18n.t()` 包裹的文本列表      |
 | `i18nTextKeyList`      | `string[]`                                       | 被 `i18n.t()` 包裹的文本 key 列表 |
 | `templateTextItemList` | `Array<{ path: string; textItems: TextItem[] }>` | 模板字符串（且其中包含中文）列表  |
@@ -317,7 +316,7 @@ console.log('翻译结果:', result.resList);
    - 复杂表达式的处理
    - 动态文本的处理
 
-3. **翻译 Key 提取**：使用 `returnResult: true` 可以获取所有翻译 key，用于生成翻译文件。
+3. **翻译 Key 提取**：函数返回值中包含 `i18nTextKeyList`，可以获取所有翻译 key，用于生成翻译文件。
 
 4. **文件备份**：建议在执行自动包裹前备份代码，或使用版本控制系统。
 
@@ -358,11 +357,12 @@ const result = await i18nCheck({
   autoImportI18nConf: {
     enable: false, // 不自动导入
   },
-  returnResult: true, // 返回检查结果
+  isWriteFile: false, // 不写入文件，只返回检查结果
 });
 
 // 根据结果手动处理
-console.log('i18n.t 包裹的文本:', result?.i18nTextItemList);
+console.log('i18n.t 包裹的文本:', result.i18nTextItemList);
+console.log('处理后的文件内容:', result.pathContentList);
 ```
 
 ### AI 批量翻译

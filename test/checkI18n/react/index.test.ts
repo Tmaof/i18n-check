@@ -8,9 +8,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 function startTest(index: number) {
   it(`case ${index}`, async () => {
     const rootDir = path.resolve(__dirname, `case${index}`);
-    const originFile = path.resolve(rootDir, 'origin.tsx');
     const targetFile = path.resolve(rootDir, 'target.tsx');
-    await i18nCheck({
+    const res = await i18nCheck({
       rootDir,
       input: {
         includeFiles: ['**/origin.{js,jsx,ts,tsx}'],
@@ -36,11 +35,11 @@ function startTest(index: number) {
         enable: true,
         importCode: "import { t } from 'i18next';",
       },
-      returnResult: false,
+      isWriteFile: false,
     });
-    const originContent = await fs.readFile(originFile, 'utf-8');
+    const content = res.pathContentList[0].content;
     const targetContent = await fs.readFile(targetFile, 'utf-8');
-    expect(originContent).toBe(targetContent);
+    expect(content).toBe(targetContent);
   });
 }
 

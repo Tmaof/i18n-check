@@ -62,9 +62,9 @@ async function wrapI18n() {
     },
     autoImportI18nConf: {
       enable: true,
-      importCode: "import {t} from 'i18next';",
+      importCode: "import { t } from 'i18next';",
     },
-    returnResult: false,
+    isWriteFile: true
   });
   console.warn(chalk.green('包裹 i18n.t() 完成\n'));
   console.warn(
@@ -93,11 +93,10 @@ async function addI18nTranslate() {
     },
     autoImportI18nConf: {
       enable: false,
-    },
-    returnResult: true,
+    }
   });
 
-  if (!res) {
+  if (!res.i18nTextKeyList.length) {
     console.error(
       chalk.red('没有检测到 i18n.t() 引用，请检查代码中是否有 i18n.t() 引用。'),
     );

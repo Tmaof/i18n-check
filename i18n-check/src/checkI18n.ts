@@ -63,12 +63,14 @@ export interface I18nCheckOptions {
   };
   /**
    * @default false
-   * 是否返回结果
+   * 包裹操作和自动导入操作 是否写入原文件中
    */
-  returnResult?: boolean;
+  isWriteFile?: boolean;
 }
 
 export interface I18nCheckRes {
+  /** 处理后的文件内容列表 */
+  pathContentList: PathContent[];
   /** 被 i18n.t() 包裹的文本列表 */
   i18nTextItemList: {
     path: string;
@@ -115,12 +117,18 @@ function extractText(options: {
   return extractTextList;
 }
 
-function getCheckI18nRes(extractTextList: ExtractRes[]): I18nCheckRes {
+function getCheckI18nRes(
+  extractTextList: ExtractRes[],
+  pathContentList: PathContent[],
+): I18nCheckRes {
   const res: I18nCheckRes = {
+    pathContentList: [],
     i18nTextItemList: [],
     i18nTextKeyList: [],
     templateTextItemList: [],
   };
+
+  res.pathContentList = pathContentList;
 
   res.i18nTextItemList = extractTextList
     .filter(({ extracted }) => extracted.i18nTextList.length > 0)
@@ -153,11 +161,16 @@ function getCheckI18nRes(extractTextList: ExtractRes[]): I18nCheckRes {
  * - 检测 i18n.t 的调用，获取其中的文本 key，并返回，你可以根据这些key进行翻译生成翻译配置。
  * @param options
  */
+/* eslint-disable */
 export async function i18nCheck(
   options: I18nCheckOptions,
-): Promise<I18nCheckRes | undefined> {
-  const { extractTextConf, wrapI18nConf, autoImportI18nConf, returnResult } =
-    options || {};
+): Promise<I18nCheckRes> {
+  const {
+    extractTextConf,
+    wrapI18nConf,
+    autoImportI18nConf,
+    isWriteFile = false,
+  } = options || {};
 
   const fileList = await glob(options.input.includeFiles, {
     cwd: options.rootDir,
@@ -203,22 +216,19 @@ export async function i18nCheck(
   const isChange = wrapI18nConf?.enable || autoImportI18nConf?.enable;
 
   // 写入文件
-  if (isChange) {
+  if (isChange && isWriteFile) {
     for (const { path, content } of pathContentList) {
       await fs.writeFile(path, content);
     }
   }
 
   // 返回结果
-  if (!returnResult) {
-    return;
-  }
   if (!isChange) {
-    return getCheckI18nRes(extractTextList);
+    return getCheckI18nRes(extractTextList, pathContentList);
   }
   const nextExtractTextList = extractText({
     pathContentList,
     extractTextConf,
   });
-  return getCheckI18nRes(nextExtractTextList);
+  return getCheckI18nRes(nextExtractTextList, pathContentList);
 }
