@@ -1,4 +1,4 @@
 dist
 # test cases to ignore
 test/**/case*/
-
+pnpm-lock.yaml
