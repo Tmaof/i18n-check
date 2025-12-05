@@ -5,6 +5,7 @@
   "type": "module",
   "author": "maofu.tian",
   "scripts": {
+    "pub:check": "pnpm build:check && pnpm test && pnpm --filter i18n-check publish",
     "test": "pnpm -C test run test",
     "start:demo-react": "pnpm -C demo-react run dev",
     "start:demo-vue3": "pnpm -C demo-vue3 run dev",
