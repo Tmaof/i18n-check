@@ -2,6 +2,7 @@
   <nav class="navbar">
     <div class="nav-container">
       <router-link to="/" class="logo">
+        <!-- 这是注释，不需要匹配 -->
         <h1>🛍️ {{ i18n.t('商城') }}</h1>
       </router-link>
       <div class="nav-links">

@@ -45,7 +45,7 @@ function startTest(index: number) {
 
 function main() {
   describe(`测试 i18nCheck (Vue3)`, () => {
-    for (let i = 1; i <= 2; i++) {
+    for (let i = 1; i <= 3; i++) {
       startTest(i);
     }
   });

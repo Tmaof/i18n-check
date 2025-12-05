@@ -151,6 +151,8 @@ export function matchNoteText(
   const singleLineNoteRegex = /\/\/([^\n]*)/g;
   // 多行注释正则
   const multiLineNoteRegex = /\/\*[\s\S]*?\*\//g;
+  // 匹配 HTML/Vue 模板中的注释文本内容
+  const htmlNoteRegex = /<!--[\s\S]*?-->/g;
   // 枚举文本正则，枚举中的中文需要忽略
   const enumTextRegex = /(?:export\s+)?enum\s+\w+\s*\{[^}]*\}/g;
   // 忽略：value === '是' ，中的文本不翻译
@@ -159,6 +161,7 @@ export function matchNoteText(
   const list = [
     singleLineNoteRegex,
     multiLineNoteRegex,
+    htmlNoteRegex,
     enumTextRegex,
     ...equalsTextRegex,
     ...ignoreTextRegexList,
