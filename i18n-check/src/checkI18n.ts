@@ -19,10 +19,25 @@ export interface I18nCheckOptions {
     excludeFiles: string[];
   };
   extractTextConf: {
-    /** 匹配出 i18n.t() 包裹的文本的正则表达式 */
+    /** 匹配出 i18n.t() 包裹的文本的正则表达式
+     *
+     * @default
+     *
+     * [
+        // 注意：我们用 [,)] 而不是 $，就是为了支持 i18n.t('xxx', ...) 这种多参数形式。
+        /i18n\.t\s*\(\s*'((?:[^'\\\n\r]|\\.)*?)'\s*[,)]/g,
+        /i18n\.t\s*\(\s*"((?:[^"\\\n\r]|\\.)*?)"\s*[,)]/g,
+        /i18n\.t\s*\(\s*`((?:[^`\\\n\r]|\\.)*?)`\s*[,)]/g,
+       ]
+     */
     i18nRegexList?: RegExp[];
     /** 需要忽略的文本的正则表达式 */
     ignoreTextRegexList?: RegExp[];
+    /**
+     * 匹配出没有被引号包裹的中文字符的正则表达式
+     * @default /[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g
+     */
+    jsxChineseRegex?: RegExp;
   };
   wrapI18nConf?: {
     /** 是否使用单引号包裹key */
@@ -107,6 +122,7 @@ function extractText(options: {
       content,
       i18nRegexList: extractTextConf.i18nRegexList,
       ignoreTextRegexList: extractTextConf.ignoreTextRegexList,
+      jsxChineseRegex: extractTextConf.jsxChineseRegex,
     });
     extractTextList.push({
       path,

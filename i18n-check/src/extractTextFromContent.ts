@@ -81,6 +81,7 @@ export function extractTextFromContent(options?: {
   content: string;
   i18nRegexList?: RegExp[];
   ignoreTextRegexList?: RegExp[];
+  jsxChineseRegex?: RegExp;
 }): ExtractTextRes {
   const {
     i18nRegexList = [
@@ -91,6 +92,7 @@ export function extractTextFromContent(options?: {
     ],
     content = '',
     ignoreTextRegexList = [],
+    jsxChineseRegex = /[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g,
   } = options || {};
   // 1. 匹配注释文本，忽略的文本
   const { noteTextList, noteIndexSet } = matchNoteText(
@@ -120,6 +122,7 @@ export function extractTextFromContent(options?: {
     content,
     [...noteIndexSet, ...valueIndexSet, ...templateIndexSet],
     i18nIndexSet,
+    jsxChineseRegex,
   );
 
   return {
@@ -436,16 +439,15 @@ export function matchJsxText(
   content: string,
   excludeIndexSet: RangeList,
   i18nIndexSet: RangeList,
+  jsxChineseRegex: RegExp,
 ): ExtractTextRes['jsxTextList'] {
   const jsxTextList: ExtractTextRes['jsxTextList'] = [];
 
   // 匹配 一段连续的中文的文本，提取所有“以中文为主”的连续文本段，允许其中包含常见标点、英文、数字、路径符号等
   // const chineseRegex =  /[\u4e00-\u9fa5][\u4e00-\u9fa5\w\s]*[\u4e00-\u9fa5]|[\u4e00-\u9fa5]/g;
-  const chineseRegex =
-    /[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g;
 
   let match;
-  while ((match = chineseRegex.exec(content)) !== null) {
+  while ((match = jsxChineseRegex.exec(content)) !== null) {
     const textContent = match[0];
     const startIndex = match.index;
     const endIndex = startIndex + textContent.length;

@@ -130,25 +130,26 @@ console.log('模板字符串检测结果:', result.templateTextItemList);
 
 ##### `I18nCheckOptions`
 
-| 属性                                   | 类型       | 必填 | 默认值                               | 说明                                 |
-| -------------------------------------- | ---------- | ---- | ------------------------------------ | ------------------------------------ |
-| `rootDir`                              | `string`   | ✅   | -                                    | 根目录路径                           |
-| `input`                                | `object`   | ✅   | -                                    | 文件匹配配置                         |
-| `input.includeFiles`                   | `string[]` | ✅   | -                                    | 包含的文件 glob 表达式               |
-| `input.excludeFiles`                   | `string[]` | ✅   | -                                    | 排除的文件 glob 表达式               |
-| `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                         |
-| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表     |
-| `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式             |
-| `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置                   |
-| `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                     |
-| `wrapI18nConf.i18nT`                   | `string`   | ❌   | `'i18n.t'`                           | i18n 调用方式                        |
-| `wrapI18nConf.isSingleQuote`           | `boolean`  | ❌   | `true`                               | 是否使用单引号                       |
-| `wrapI18nConf.isMarkTemplateText`      | `boolean`  | ❌   | `true`                               | 是否标记模板字符串                   |
-| `wrapI18nConf.markTemplateTextComment` | `string`   | ❌   | `'/** 此模版字符串中包含中文 */'`    | 标记注释                             |
-| `autoImportI18nConf`                   | `object`   | ❌   | -                                    | 自动导入配置                         |
-| `autoImportI18nConf.enable`            | `boolean`  | ❌   | `true`                               | 是否启用自动导入                     |
-| `autoImportI18nConf.importCode`        | `string`   | ❌   | `"import i18n from '@/utils/i18n';"` | 导入语句                             |
-| `isWriteFile`                          | `boolean`  | ❌   | `false`                              | 包裹操作和自动导入操作是否写入原文件 |
+| 属性                                   | 类型       | 必填 | 默认值                               | 说明                                       |
+| -------------------------------------- | ---------- | ---- | ------------------------------------ | ------------------------------------------ |
+| `rootDir`                              | `string`   | ✅   | -                                    | 根目录路径                                 |
+| `input`                                | `object`   | ✅   | -                                    | 文件匹配配置                               |
+| `input.includeFiles`                   | `string[]` | ✅   | -                                    | 包含的文件 glob 表达式                     |
+| `input.excludeFiles`                   | `string[]` | ✅   | -                                    | 排除的文件 glob 表达式                     |
+| `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                               |
+| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表           |
+| `extractTextConf.jsxChineseRegex`      | `RegExp`   | ❌   | 见下                                 | 匹配出没有被引号包裹的中文字符的正则表达式 |
+| `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式                   |
+| `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置                         |
+| `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                           |
+| `wrapI18nConf.i18nT`                   | `string`   | ❌   | `'i18n.t'`                           | i18n 调用方式                              |
+| `wrapI18nConf.isSingleQuote`           | `boolean`  | ❌   | `true`                               | 是否使用单引号                             |
+| `wrapI18nConf.isMarkTemplateText`      | `boolean`  | ❌   | `true`                               | 是否标记模板字符串                         |
+| `wrapI18nConf.markTemplateTextComment` | `string`   | ❌   | `'/** 此模版字符串中包含中文 */'`    | 标记注释                                   |
+| `autoImportI18nConf`                   | `object`   | ❌   | -                                    | 自动导入配置                               |
+| `autoImportI18nConf.enable`            | `boolean`  | ❌   | `true`                               | 是否启用自动导入                           |
+| `autoImportI18nConf.importCode`        | `string`   | ❌   | `"import i18n from '@/utils/i18n';"` | 导入语句                                   |
+| `isWriteFile`                          | `boolean`  | ❌   | `false`                              | 包裹操作和自动导入操作是否写入原文件       |
 
 - `extractTextConf.i18nRegexList` 的默认值：
 
@@ -159,6 +160,12 @@ console.log('模板字符串检测结果:', result.templateTextItemList);
   /i18n\.t\s*\(\s*"((?:[^"\\\n\r]|\\.)*?)"\s*[,)]/g,
   /i18n\.t\s*\(\s*`((?:[^`\\\n\r]|\\.)*?)`\s*[,)]/g,
 ]
+```
+
+- `extractTextConf.ignoreTextRegexList` 的默认值：
+
+```
+/[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g
 ```
 
 #### 返回值
