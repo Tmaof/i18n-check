@@ -575,6 +575,10 @@ console.log('保持索引的结果:', result.resListOfKeepIndex);
 
 欢迎提交 Issue 和 Pull Request！
 
+## 📋 更新日志
+
+版本更新记录请查看 [CHANGELOG.md](./CHANGELOG.md)。
+
 ## 📄 许可证
 
 MIT

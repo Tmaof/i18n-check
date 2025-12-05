@@ -14,7 +14,8 @@
     "url": "https://github.com/Tmaof/i18n-check/issues"
   },
   "files": [
-    "dist/*"
+    "dist/*",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "clean": "rimraf dist",
