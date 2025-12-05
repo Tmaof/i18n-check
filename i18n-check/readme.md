@@ -172,12 +172,13 @@ console.log('模板字符串检测结果:', result.templateTextItemList);
 
 ##### `I18nCheckRes`
 
-| 属性                   | 类型                                             | 说明                              |
-| ---------------------- | ------------------------------------------------ | --------------------------------- |
-| `pathContentList`      | `Array<{ path: string; content: string }>`       | 处理后的文件内容列表              |
-| `i18nTextItemList`     | `Array<{ path: string; textItems: TextItem[] }>` | 被 `i18n.t()` 包裹的文本列表      |
-| `i18nTextKeyList`      | `string[]`                                       | 被 `i18n.t()` 包裹的文本 key 列表 |
-| `templateTextItemList` | `Array<{ path: string; textItems: TextItem[] }>` | 模板字符串（且其中包含中文）列表  |
+| 属性                   | 类型                                             | 说明                                     |
+| ---------------------- | ------------------------------------------------ | ---------------------------------------- |
+| `pathContentList`      | `Array<{ path: string; content: string }>`       | 处理后的文件内容列表                     |
+| `i18nTextItemList`     | `Array<{ path: string; textItems: TextItem[] }>` | 被 `i18n.t()` 包裹的文本列表             |
+| `i18nTextKeyList`      | `string[]`                                       | 被 `i18n.t()` 包裹的文本 key 列表        |
+| `templateTextItemList` | `Array<{ path: string; textItems: TextItem[] }>` | 模板字符串（且其中包含中文）列表         |
+| `extractList`          | `ExtractRes[]`                                   | 对文件内容进行文本 匹配提取 后的结果列表 |
 
 ### `callOpenAISingle<R>(config: CallOpenAISingleConfig<R>): Promise<R>`
 

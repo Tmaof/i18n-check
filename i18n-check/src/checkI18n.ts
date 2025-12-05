@@ -98,6 +98,8 @@ export interface I18nCheckRes {
     path: string;
     textItems: TextItem[];
   }[];
+  /** 对文件内容进行文本 匹配提取 后的结果列表 */
+  extractList: ExtractRes[];
 }
 
 export interface ExtractRes {
@@ -142,9 +144,11 @@ function getCheckI18nRes(
     i18nTextItemList: [],
     i18nTextKeyList: [],
     templateTextItemList: [],
+    extractList: [],
   };
 
   res.pathContentList = pathContentList;
+  res.extractList = extractTextList;
 
   res.i18nTextItemList = extractTextList
     .filter(({ extracted }) => extracted.i18nTextList.length > 0)
