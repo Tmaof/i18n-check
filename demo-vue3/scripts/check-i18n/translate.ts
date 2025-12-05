@@ -26,7 +26,10 @@ export type TranslateResult = Record<
 async function generateUserPrompt(textList: string[]) {
   const filePath = path.resolve(__dirname, './aiTranslatePrompt.md');
   let prompt = await fs.readFile(filePath, 'utf-8');
-  prompt = prompt.replace('【待翻译的列表】', `[\n${textList.join(',\n')}\n]`);
+  prompt = prompt.replace(
+    '【待翻译的列表】',
+    `[\n  ${textList.map((item) => JSON.stringify(item)).join(',\n  ')}\n]`,
+  );
   return prompt;
 }
 
