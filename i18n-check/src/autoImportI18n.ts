@@ -44,7 +44,11 @@ export function importI18n(options: {
 
   switch (handleMode) {
     case HandleMode.vue: {
-      const [{ end }] = findScriptOpeningTags(content);
+      const match = findScriptOpeningTags(content);
+      const { end } = match[0] || {};
+      if (!end) {
+        return content;
+      }
       const before = content.substring(0, end);
       const after = content.substring(end);
       return `${before}\n${importCode}${after}`;
@@ -75,8 +79,8 @@ interface ScriptTagMatch {
  * @param content 源字符串（如 SFC 单文件组件内容）
  * @returns 匹配结果数组（通常只取第一个），若未找到则返回空数组
  */
-function findScriptOpeningTags(content: string): ScriptTagMatch[] {
-  const matches: ScriptTagMatch[] = [];
+function findScriptOpeningTags(content: string) {
+  const matches: (ScriptTagMatch | undefined)[] = [];
   const regex = /<script(?:\s[^>]*)?>/gi;
 
   let match: RegExpExecArray | null;
