@@ -36,40 +36,11 @@ yarn add i18n-check
 
 ## 🚀 快速开始
 
-### 基本使用
-
 ```typescript
 import { i18nCheck } from 'i18n-check';
 import path from 'path';
-
-await i18nCheck({
-  rootDir: path.resolve(__dirname, './src'),
-  input: {
-    includeFiles: ['**/*.{js,jsx,ts,tsx}'],
-    excludeFiles: ['**/*.test.ts', '**/*.spec.ts'],
-  },
-  extractTextConf: {
-    i18nRegexList: [
-      /i18n\.t\s*\(\s*'((?:[^'\\\n\r]|\\.)*?)'\s*[,)]/g,
-      /i18n\.t\s*\(\s*"((?:[^"\\\n\r]|\\.)*?)"\s*[,)]/g,
-    ],
-  },
-  wrapI18nConf: {
-    enable: true,
-    i18nT: 'i18n.t',
-  },
-  autoImportI18nConf: {
-    enable: true,
-    importCode: "import i18n from '@/utils/i18n';",
-  },
-});
-```
-
-### 完整示例
-
-```typescript
-import { i18nCheck } from 'i18n-check';
-import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const result = await i18nCheck({
   // 根目录
@@ -120,133 +91,11 @@ console.log('所有 i18n.t() 中的文本 key:', result.i18nTextKeyList);
 console.log('模板字符串检测结果:', result.templateTextItemList);
 ```
 
-## 📖 API 文档
-
-### `i18nCheck(options: I18nCheckOptions): Promise<I18nCheckRes>`
-
-主函数，执行国际化检查和处理。
-
-#### 参数
-
-##### `I18nCheckOptions`
-
-| 属性                                   | 类型       | 必填 | 默认值                               | 说明                                       |
-| -------------------------------------- | ---------- | ---- | ------------------------------------ | ------------------------------------------ |
-| `rootDir`                              | `string`   | ✅   | -                                    | 根目录路径                                 |
-| `input`                                | `object`   | ✅   | -                                    | 文件匹配配置                               |
-| `input.includeFiles`                   | `string[]` | ✅   | -                                    | 包含的文件 glob 表达式                     |
-| `input.excludeFiles`                   | `string[]` | ✅   | -                                    | 排除的文件 glob 表达式                     |
-| `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                               |
-| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表           |
-| `extractTextConf.jsxChineseRegex`      | `RegExp`   | ❌   | 见下                                 | 匹配出没有被引号包裹的中文字符的正则表达式 |
-| `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式                   |
-| `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置                         |
-| `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                           |
-| `wrapI18nConf.i18nT`                   | `string`   | ❌   | `'i18n.t'`                           | i18n 调用方式                              |
-| `wrapI18nConf.isSingleQuote`           | `boolean`  | ❌   | `true`                               | 是否使用单引号                             |
-| `wrapI18nConf.isMarkTemplateText`      | `boolean`  | ❌   | `true`                               | 是否标记模板字符串                         |
-| `wrapI18nConf.markTemplateTextComment` | `string`   | ❌   | `'/** 此模版字符串中包含中文 */'`    | 标记注释                                   |
-| `autoImportI18nConf`                   | `object`   | ❌   | -                                    | 自动导入配置                               |
-| `autoImportI18nConf.enable`            | `boolean`  | ❌   | `true`                               | 是否启用自动导入                           |
-| `autoImportI18nConf.importCode`        | `string`   | ❌   | `"import i18n from '@/utils/i18n';"` | 导入语句                                   |
-| `isWriteFile`                          | `boolean`  | ❌   | `false`                              | 包裹操作和自动导入操作是否写入原文件       |
-
-- `extractTextConf.i18nRegexList` 的默认值：
-
-```
-[
-  // 注意：我们用 [,)] 而不是 $，就是为了支持 i18n.t('xxx', ...) 这种多参数形式。
-  /i18n\.t\s*\(\s*'((?:[^'\\\n\r]|\\.)*?)'\s*[,)]/g,
-  /i18n\.t\s*\(\s*"((?:[^"\\\n\r]|\\.)*?)"\s*[,)]/g,
-  /i18n\.t\s*\(\s*`((?:[^`\\\n\r]|\\.)*?)`\s*[,)]/g,
-]
-```
-
-- `extractTextConf.ignoreTextRegexList` 的默认值：
-
-```
-/[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g
-```
-
-#### 返回值
-
-##### `I18nCheckRes`
-
-| 属性                   | 类型                                             | 说明                                     |
-| ---------------------- | ------------------------------------------------ | ---------------------------------------- |
-| `pathContentList`      | `Array<{ path: string; content: string }>`       | 处理后的文件内容列表                     |
-| `i18nTextItemList`     | `Array<{ path: string; textItems: TextItem[] }>` | 被 `i18n.t()` 包裹的文本列表             |
-| `i18nTextKeyList`      | `string[]`                                       | 被 `i18n.t()` 包裹的文本 key 列表        |
-| `templateTextItemList` | `Array<{ path: string; textItems: TextItem[] }>` | 模板字符串（且其中包含中文）列表         |
-| `extractList`          | `ExtractRes[]`                                   | 对文件内容进行文本 匹配提取 后的结果列表 |
-
-### `callOpenAISingle<R>(config: CallOpenAISingleConfig<R>): Promise<R>`
-
-调用 LLM API 进行单次处理。
-
-#### 参数
-
-##### `CallOpenAISingleConfig<R>`
-
-| 属性                 | 类型                               | 必填 | 默认值                      | 说明                                      |
-| -------------------- | ---------------------------------- | ---- | --------------------------- | ----------------------------------------- |
-| `baseURL`            | `string`                           | ✅   | -                           | LLM API 的基础 URL                        |
-| `model`              | `string`                           | ✅   | -                           | 使用的模型名称                            |
-| `temperature`        | `number`                           | ✅   | -                           | 控制生成文本的随机性（0-1，值越高越随机） |
-| `maxTokens`          | `number`                           | ✅   | -                           | 生成的最大 token 数                       |
-| `userPrompt`         | `string`                           | ✅   | -                           | 用户提示词                                |
-| `systemPrompt`       | `string`                           | ✅   | -                           | 系统提示词                                |
-| `apiKey`             | `string`                           | ✅   | -                           | API Key                                   |
-| `timeout`            | `number`                           | ❌   | `120000`                    | 超时时间（毫秒）                          |
-| `resolveLLMResponse` | `(response: LLMResponseBody) => R` | ❌   | `defaultResolveLLMResponse` | 解析 LLM 响应的函数                       |
-
-#### 返回值
-
-返回解析后的结果，类型为 `R`。
-
-### `callOpenAI<T, R>(config: CallOpenAIConfig<T, R>): Promise<{ resList: R[]; errList: Error[]; resListOfKeepIndex: (R | Error)[] }>`
-
-调用 LLM API 进行批量处理，支持分批和并发控制。
-
-#### 参数
-
-##### `CallOpenAIConfig<T, R>`
-
-| 属性                          | 类型                                                    | 必填 | 默认值 | 说明                 |
-| ----------------------------- | ------------------------------------------------------- | ---- | ------ | -------------------- |
-| `argList`                     | `T[]`                                                   | ✅   | -      | 待处理的参数列表     |
-| `aiConfig`                    | `Omit<CallOpenAISingleConfig<R>, 'userPrompt'> & {...}` | ✅   | -      | AI 配置              |
-| `aiConfig.generateUserPrompt` | `(shardedArgList: T[]) => string \| Promise<string>`    | ✅   | -      | 生成用户提示词的函数 |
-| `batchSize`                   | `number`                                                | ❌   | `50`   | 每批处理的数量       |
-| `maxConcurrent`               | `number`                                                | ❌   | `10`   | 最大并发数           |
-
-#### 返回值
-
-| 属性                 | 类型             | 说明                         |
-| -------------------- | ---------------- | ---------------------------- |
-| `resList`            | `R[]`            | 成功的结果列表（按完成顺序） |
-| `errList`            | `Error[]`        | 错误列表                     |
-| `resListOfKeepIndex` | `(R \| Error)[]` | 保持原始索引的结果列表       |
-
-### `multiRequest<T, R>(argList: T[], task: Function, maxNum?: number): Promise<{ resList: R[]; errList: Error[]; resListOfKeepIndex: (R \| Error)[] }>`
-
-并发处理工具函数，用于控制并发数量。
-
-#### 参数
-
-| 属性      | 类型                                                                       | 必填 | 默认值 | 说明             |
-| --------- | -------------------------------------------------------------------------- | ---- | ------ | ---------------- |
-| `argList` | `T[]`                                                                      | ✅   | -      | 待处理的参数列表 |
-| `task`    | `(arg: T, index: number, count: number, total: number) => R \| Promise<R>` | ✅   | -      | 处理任务的函数   |
-| `maxNum`  | `number`                                                                   | ❌   | `5`    | 最大并发数       |
-
-#### 返回值
-
-与 `callOpenAI` 相同。
-
 ## 🎯 使用场景
 
 ### 场景 1：自动包裹中文文本
+
+例子1：
 
 ```typescript
 // 处理前
@@ -256,7 +105,7 @@ const title = '欢迎使用';
 const title = i18n.t('欢迎使用');
 ```
 
-### 场景 2：自动包裹 JSX 文本
+例子2：
 
 ```typescript
 // 处理前
@@ -264,6 +113,16 @@ const title = i18n.t('欢迎使用');
 
 // 处理后
 <div>{ i18n.t('欢迎使用') }</div>
+```
+
+### 场景 2：标记模板字符串
+
+```typescript
+// 处理前
+const text = `文本 ${version}`;
+
+// 处理后
+/** 此模版字符串中包含中文 */ const text = `文本 ${version}`;
 ```
 
 ### 场景 3：自动导入 i18n
@@ -277,17 +136,7 @@ import i18n from '@/utils/i18n';
 const title = i18n.t('欢迎使用');
 ```
 
-### 场景 4：标记模板字符串
-
-```typescript
-// 处理前
-const text = `文本 ${version}`;
-
-// 处理后
-/** 此模版字符串中包含中文 */ const text = `文本 ${version}`;
-```
-
-### 场景 5：AI 批量翻译
+### 场景 4：AI 批量翻译
 
 ```typescript
 import { callOpenAI } from 'i18n-check';
@@ -457,6 +306,130 @@ if (true) {
 </div>
 ```
 
+## 📖 API 文档
+
+### `i18nCheck(options: I18nCheckOptions): Promise<I18nCheckRes>`
+
+主函数，执行国际化检查和处理。
+
+#### 参数
+
+##### `I18nCheckOptions`
+
+| 属性                                   | 类型       | 必填 | 默认值                               | 说明                                       |
+| -------------------------------------- | ---------- | ---- | ------------------------------------ | ------------------------------------------ |
+| `rootDir`                              | `string`   | ✅   | -                                    | 根目录路径                                 |
+| `input`                                | `object`   | ✅   | -                                    | 文件匹配配置                               |
+| `input.includeFiles`                   | `string[]` | ✅   | -                                    | 包含的文件 glob 表达式                     |
+| `input.excludeFiles`                   | `string[]` | ✅   | -                                    | 排除的文件 glob 表达式                     |
+| `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                               |
+| `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表           |
+| `extractTextConf.jsxChineseRegex`      | `RegExp`   | ❌   | 见下                                 | 匹配出没有被引号包裹的中文字符的正则表达式 |
+| `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式                   |
+| `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置                         |
+| `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                           |
+| `wrapI18nConf.i18nT`                   | `string`   | ❌   | `'i18n.t'`                           | i18n 调用方式                              |
+| `wrapI18nConf.isSingleQuote`           | `boolean`  | ❌   | `true`                               | 是否使用单引号                             |
+| `wrapI18nConf.isMarkTemplateText`      | `boolean`  | ❌   | `true`                               | 是否标记模板字符串                         |
+| `wrapI18nConf.markTemplateTextComment` | `string`   | ❌   | `'/** 此模版字符串中包含中文 */'`    | 标记注释                                   |
+| `autoImportI18nConf`                   | `object`   | ❌   | -                                    | 自动导入配置                               |
+| `autoImportI18nConf.enable`            | `boolean`  | ❌   | `true`                               | 是否启用自动导入                           |
+| `autoImportI18nConf.importCode`        | `string`   | ❌   | `"import i18n from '@/utils/i18n';"` | 导入语句                                   |
+| `isWriteFile`                          | `boolean`  | ❌   | `false`                              | 包裹操作和自动导入操作是否写入原文件       |
+
+- `extractTextConf.i18nRegexList` 的默认值：
+
+```
+[
+  // 注意：我们用 [,)] 而不是 $，就是为了支持 i18n.t('xxx', ...) 这种多参数形式。
+  /i18n\.t\s*\(\s*'((?:[^'\\\n\r]|\\.)*?)'\s*[,)]/g,
+  /i18n\.t\s*\(\s*"((?:[^"\\\n\r]|\\.)*?)"\s*[,)]/g,
+  /i18n\.t\s*\(\s*`((?:[^`\\\n\r]|\\.)*?)`\s*[,)]/g,
+]
+```
+
+- `extractTextConf.jsxChineseRegex` 的默认值：
+
+```
+/[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g
+```
+
+#### 返回值
+
+##### `I18nCheckRes`
+
+| 属性                   | 类型                                             | 说明                                     |
+| ---------------------- | ------------------------------------------------ | ---------------------------------------- |
+| `pathContentList`      | `Array<{ path: string; content: string }>`       | 处理后的文件内容列表                     |
+| `i18nTextItemList`     | `Array<{ path: string; textItems: TextItem[] }>` | 被 `i18n.t()` 包裹的文本列表             |
+| `i18nTextKeyList`      | `string[]`                                       | 被 `i18n.t()` 包裹的文本 key 列表        |
+| `templateTextItemList` | `Array<{ path: string; textItems: TextItem[] }>` | 模板字符串（且其中包含中文）列表         |
+| `extractList`          | `ExtractRes[]`                                   | 对文件内容进行文本 匹配提取 后的结果列表 |
+
+### `callOpenAISingle<R>(config: CallOpenAISingleConfig<R>): Promise<R>`
+
+调用 LLM API 进行单次处理。
+
+#### 参数
+
+##### `CallOpenAISingleConfig<R>`
+
+| 属性                 | 类型                               | 必填 | 默认值                      | 说明                                      |
+| -------------------- | ---------------------------------- | ---- | --------------------------- | ----------------------------------------- |
+| `baseURL`            | `string`                           | ✅   | -                           | LLM API 的基础 URL                        |
+| `model`              | `string`                           | ✅   | -                           | 使用的模型名称                            |
+| `temperature`        | `number`                           | ✅   | -                           | 控制生成文本的随机性（0-1，值越高越随机） |
+| `maxTokens`          | `number`                           | ✅   | -                           | 生成的最大 token 数                       |
+| `userPrompt`         | `string`                           | ✅   | -                           | 用户提示词                                |
+| `systemPrompt`       | `string`                           | ✅   | -                           | 系统提示词                                |
+| `apiKey`             | `string`                           | ✅   | -                           | API Key                                   |
+| `timeout`            | `number`                           | ❌   | `120000`                    | 超时时间（毫秒）                          |
+| `resolveLLMResponse` | `(response: LLMResponseBody) => R` | ❌   | `defaultResolveLLMResponse` | 解析 LLM 响应的函数                       |
+
+#### 返回值
+
+返回解析后的结果，类型为 `R`。
+
+### `callOpenAI<T, R>(config: CallOpenAIConfig<T, R>): Promise<{ resList: R[]; errList: Error[]; resListOfKeepIndex: (R | Error)[] }>`
+
+调用 LLM API 进行批量处理，支持分批和并发控制。
+
+#### 参数
+
+##### `CallOpenAIConfig<T, R>`
+
+| 属性                          | 类型                                                    | 必填 | 默认值 | 说明                 |
+| ----------------------------- | ------------------------------------------------------- | ---- | ------ | -------------------- |
+| `argList`                     | `T[]`                                                   | ✅   | -      | 待处理的参数列表     |
+| `aiConfig`                    | `Omit<CallOpenAISingleConfig<R>, 'userPrompt'> & {...}` | ✅   | -      | AI 配置              |
+| `aiConfig.generateUserPrompt` | `(shardedArgList: T[]) => string \| Promise<string>`    | ✅   | -      | 生成用户提示词的函数 |
+| `batchSize`                   | `number`                                                | ❌   | `50`   | 每批处理的数量       |
+| `maxConcurrent`               | `number`                                                | ❌   | `10`   | 最大并发数           |
+
+#### 返回值
+
+| 属性                 | 类型             | 说明                         |
+| -------------------- | ---------------- | ---------------------------- |
+| `resList`            | `R[]`            | 成功的结果列表（按完成顺序） |
+| `errList`            | `Error[]`        | 错误列表                     |
+| `resListOfKeepIndex` | `(R \| Error)[]` | 保持原始索引的结果列表       |
+
+### `multiRequest<T, R>(argList: T[], task: Function, maxNum?: number): Promise<{ resList: R[]; errList: Error[]; resListOfKeepIndex: (R \| Error)[] }>`
+
+并发处理工具函数，用于控制并发数量。
+
+#### 参数
+
+| 属性      | 类型                                                                       | 必填 | 默认值 | 说明             |
+| --------- | -------------------------------------------------------------------------- | ---- | ------ | ---------------- |
+| `argList` | `T[]`                                                                      | ✅   | -      | 待处理的参数列表 |
+| `task`    | `(arg: T, index: number, count: number, total: number) => R \| Promise<R>` | ✅   | -      | 处理任务的函数   |
+| `maxNum`  | `number`                                                                   | ❌   | `5`    | 最大并发数       |
+
+#### 返回值
+
+与 `callOpenAI` 相同。
+
 ## 🔧 高级用法
 
 ### 自定义 i18n 调用方式
@@ -577,7 +550,7 @@ console.log('保持索引的结果:', result.resListOfKeepIndex);
 
 ## 📋 更新日志
 
-版本更新记录请查看 [CHANGELOG.md](./CHANGELOG.md)。
+版本更新记录请查看 [CHANGELOG.md](https://github.com/Tmaof/i18n-check/blob/fa9de68bdfdded62827e88a95842e89b6338686e/i18n-check/CHANGELOG.md)。
 
 ## 📄 许可证
 
