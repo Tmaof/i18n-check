@@ -35,9 +35,14 @@ export interface I18nCheckOptions {
     ignoreTextRegexList?: RegExp[];
     /**
      * 匹配出没有被引号包裹的中文字符的正则表达式
-     * @default /[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g
+     * @default /[\u4e00-\u9fa5][-/\u4e00-\u9fa5a-zA-Z0-9\x20.;!?'"，。“”‘’（）【】、？！；]*[\u4e00-\u9fa5。]/g
      */
     jsxChineseRegex?: RegExp;
+    /**
+     * 禁用下一行检查的标记，如果一行文本中包含此标记，则下一行不进行文本匹配和检查。
+     * @default 'i18n-disable-next-line'
+     */
+    disableNextLineFlag?: string;
   };
   wrapI18nConf?: {
     /** 是否使用单引号包裹key */
@@ -125,6 +130,7 @@ function extractText(options: {
       i18nRegexList: extractTextConf.i18nRegexList,
       ignoreTextRegexList: extractTextConf.ignoreTextRegexList,
       jsxChineseRegex: extractTextConf.jsxChineseRegex,
+      disableNextLineFlag: extractTextConf.disableNextLineFlag,
     });
     extractTextList.push({
       path,

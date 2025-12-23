@@ -45,7 +45,7 @@ function startTest(index: number) {
 
 function main() {
   describe(`测试 i18nCheck (React)`, () => {
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 18; i++) {
       startTest(i);
     }
   });

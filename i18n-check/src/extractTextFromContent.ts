@@ -82,6 +82,7 @@ export function extractTextFromContent(options?: {
   i18nRegexList?: RegExp[];
   ignoreTextRegexList?: RegExp[];
   jsxChineseRegex?: RegExp;
+  disableNextLineFlag?: string;
 }): ExtractTextRes {
   const {
     i18nRegexList = [
@@ -92,8 +93,17 @@ export function extractTextFromContent(options?: {
     ],
     content = '',
     ignoreTextRegexList = [],
-    jsxChineseRegex = /[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g,
+    jsxChineseRegex = /[\u4e00-\u9fa5][-/\u4e00-\u9fa5a-zA-Z0-9\x20.;!?'"，。“”‘’（）【】、？！；]*[\u4e00-\u9fa5。]/g,
+    disableNextLineFlag = 'i18n-disable-next-line',
   } = options || {};
+
+  const disableNextLineFlagRows = getDisableNextLineFlagRows(
+    content,
+    disableNextLineFlag,
+  );
+  /** 禁用检查的行号列表 */
+  const disableLineRows = disableNextLineFlagRows.map((row) => row + 1);
+
   // 1. 匹配注释文本，忽略的文本
   const { noteTextList, noteIndexSet } = matchNoteText(
     content,
@@ -108,6 +118,7 @@ export function extractTextFromContent(options?: {
     content,
     noteIndexSet,
     i18nIndexSet,
+    disableLineRows,
   );
 
   // 4. 匹配普通字符串
@@ -115,6 +126,7 @@ export function extractTextFromContent(options?: {
     content,
     noteIndexSet,
     i18nIndexSet,
+    disableLineRows,
   );
 
   // 5. 匹配JSX文本，没有被引号包裹的中文字符
@@ -123,6 +135,7 @@ export function extractTextFromContent(options?: {
     [...noteIndexSet, ...valueIndexSet, ...templateIndexSet],
     i18nIndexSet,
     jsxChineseRegex,
+    disableLineRows,
   );
 
   return {
@@ -132,6 +145,27 @@ export function extractTextFromContent(options?: {
     valueTextList,
     jsxTextList,
   };
+}
+
+/**
+ * 获取禁用下一行检查的标记的行号
+ * @param content 内容
+ * @param disableNextLineFlag 禁用下一行检查的标记
+ * @returns 禁用下一行检查的标记的行号
+ */
+function getDisableNextLineFlagRows(
+  content: string,
+  disableNextLineFlag: string,
+) {
+  const rows: number[] = [];
+  const lines = content.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.includes(disableNextLineFlag)) {
+      rows.push(i + 1);
+    }
+  }
+  return rows;
 }
 
 /**
@@ -156,7 +190,16 @@ export function matchNoteText(
   // 枚举文本正则，枚举中的中文需要忽略
   const enumTextRegex = /(?:export\s+)?enum\s+\w+\s*\{[^}]*\}/g;
   // 忽略：value === '是' ，中的文本不翻译
-  const equalsTextRegex = [/===\s*'[^']*'/g, /===\s*"[^"]*"/g];
+  const equalsTextRegex = [
+    /===\s*'[^']*'/g,
+    /===\s*"[^"]*"/g,
+    /!==\s*'[^']*'/g,
+    /!==\s*"[^"]*"/g,
+    /==\s*'[^']*'/g,
+    /==\s*"[^"]*"/g,
+    /!=\s*'[^']*'/g,
+    /!=\s*"[^"]*"/g,
+  ];
 
   const list = [
     singleLineNoteRegex,
@@ -286,6 +329,7 @@ export function matchTemplateText(
   content: string,
   noteIndexSet: RangeList,
   i18nIndexSet: RangeList,
+  disableLineRows: number[],
 ): {
   templateTextList: ExtractTextRes['templateTextList'];
   templateIndexSet: RangeList;
@@ -307,6 +351,11 @@ export function matchTemplateText(
     if (textContent && isContains) {
       const textStartIndex = startIndex + 1; // 跳过开始的 `
       const textEndIndex = endIndex - 1; // 跳过结束的 `
+      const { row, column } = getPosition(content, textStartIndex);
+
+      if (disableLineRows.includes(row)) {
+        continue;
+      }
 
       if (isInRange(textStartIndex, textEndIndex, noteIndexSet)) {
         continue;
@@ -322,7 +371,6 @@ export function matchTemplateText(
         }
       }
 
-      const { row, column } = getPosition(content, textStartIndex);
       const isInI18n = isInRange(startIndex, endIndex, i18nIndexSet);
 
       templateTextList.push({
@@ -358,6 +406,7 @@ export function matchValueText(
   content: string,
   noteIndexSet: RangeList,
   i18nIndexSet: RangeList,
+  disableLineRows: number[],
 ): {
   valueTextList: ExtractTextRes['valueTextList'];
   valueIndexSet: RangeList;
@@ -389,6 +438,11 @@ export function matchValueText(
         const endIndex = startIndex + fullMatch.length;
         const textStartIndex = startIndex + 1; // 跳过开始的 '
         const textEndIndex = endIndex - 1; // 跳过结束的 '
+        const { row, column } = getPosition(content, textStartIndex);
+
+        if (disableLineRows.includes(row)) {
+          continue;
+        }
 
         if (isInRange(textStartIndex, textEndIndex, noteIndexSet)) {
           continue;
@@ -403,8 +457,6 @@ export function matchValueText(
             break;
           }
         }
-
-        const { row, column } = getPosition(content, textStartIndex);
 
         const isInI18n = isInRange(startIndex, endIndex, i18nIndexSet);
 
@@ -443,6 +495,7 @@ export function matchJsxText(
   excludeIndexSet: RangeList,
   i18nIndexSet: RangeList,
   jsxChineseRegex: RegExp,
+  disableLineRows: number[],
 ): ExtractTextRes['jsxTextList'] {
   const jsxTextList: ExtractTextRes['jsxTextList'] = [];
 
@@ -454,6 +507,11 @@ export function matchJsxText(
     const textContent = match[0];
     const startIndex = match.index;
     const endIndex = startIndex + textContent.length;
+    const { row, column } = getPosition(content, startIndex);
+
+    if (disableLineRows.includes(row)) {
+      continue;
+    }
 
     // 检查是否在注释中
     // 检查是否在字符串中（单引号、双引号、模板字符串）
@@ -461,7 +519,6 @@ export function matchJsxText(
       continue;
     }
 
-    const { row, column } = getPosition(content, startIndex);
     const isInI18n = isInRange(startIndex, endIndex, i18nIndexSet);
 
     jsxTextList.push({

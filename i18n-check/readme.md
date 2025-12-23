@@ -19,7 +19,7 @@
   - JSX 文本
 - 🎯 **自动包裹**：自动为中文文本添加 `i18n.t()` 包裹
 - 📦 **自动导入**：自动检测并导入 i18n 模块
-- 🚫 **智能忽略**：自动忽略注释、枚举等不需要翻译的文本
+- 🚫 **智能忽略**：自动忽略注释、枚举、比较运算符（`===`, `!==`, `==`, `!=`）等不需要翻译的文本
 - 📝 **模板字符串标记**：自动标记包含中文的模板字符串，提醒手动处理
 - 🔑 **提取翻译 Key**：提取所有 `i18n.t()` 中的文本 key，用于生成翻译文件
 - 🤖 **AI 批量翻译**：支持调用 LLM API 进行批量翻译处理，支持分批和并发控制
@@ -177,6 +177,12 @@ console.log('翻译结果:', result.resList);
 
 4. **文件备份**：建议在执行自动包裹前备份代码，或使用版本控制系统。
 
+5. **禁用下一行检查**：如果某行代码中包含 `i18n-disable-next-line` 标记（可通过 `disableNextLineFlag` 参数自定义），则下一行不会进行文本匹配和检查。例如：
+   ```typescript
+   // i18n-disable-next-line
+   const text = '不处理这里的中文';
+   ```
+
 ## ⚠️ 已知限制
 
 该工具基于正则匹配进行内容处理，以下情况无法正常包裹 `i18n.t()`，需要在处理完成后手动进行检查和修正：
@@ -325,6 +331,7 @@ if (true) {
 | `extractTextConf`                      | `object`   | ✅   | -                                    | 文本提取配置                               |
 | `extractTextConf.i18nRegexList`        | `RegExp[]` | ❌   | 见下                                 | 匹配 `i18n.t()` 的正则表达式列表           |
 | `extractTextConf.jsxChineseRegex`      | `RegExp`   | ❌   | 见下                                 | 匹配出没有被引号包裹的中文字符的正则表达式 |
+| `extractTextConf.disableNextLineFlag`  | `string`   | ❌   | `'i18n-disable-next-line'`           | 禁用下一行检查的标记                       |
 | `extractTextConf.ignoreTextRegexList`  | `RegExp[]` | ❌   | `[]`                                 | 需要忽略的文本正则表达式                   |
 | `wrapI18nConf`                         | `object`   | ❌   | -                                    | 包裹 i18n.t() 配置                         |
 | `wrapI18nConf.enable`                  | `boolean`  | ❌   | `true`                               | 是否启用自动包裹                           |
@@ -351,7 +358,7 @@ if (true) {
 - `extractTextConf.jsxChineseRegex` 的默认值：
 
 ```
-/[\u4e00-\u9fa5][\u4e00-\u9fa5a-zA-Z.，？！“”‘’；、,;!?'"（）【】/-]*[\u4e00-\u9fa5。]/g
+/[\u4e00-\u9fa5][-/\u4e00-\u9fa5a-zA-Z0-9\x20.,;!?'"“"'（）【】、，。？！；]*[\u4e00-\u9fa5。]/g
 ```
 
 #### 返回值
@@ -473,6 +480,22 @@ const result = await i18nCheck({
 // 根据结果手动处理
 console.log('i18n.t 包裹的文本:', result.i18nTextItemList);
 console.log('处理后的文件内容:', result.pathContentList);
+```
+
+### 禁用下一行检查
+
+```typescript
+await i18nCheck({
+  // ... 其他配置
+  extractTextConf: {
+    // 自定义禁用标记（默认为 'i18n-disable-next-line'）
+    disableNextLineFlag: 'my-custom-disable-flag',
+  },
+});
+
+// 在代码中使用：
+// my-custom-disable-flag
+const text = '不处理这里的中文';
 ```
 
 ### AI 批量翻译
