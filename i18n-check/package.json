@@ -21,7 +21,8 @@
     "clean": "rimraf dist",
     "build:types": "npx tsc -p tsconfig.types.json",
     "build": "tsx build/index.ts",
-    "pub": "pnpm build && pnpm publish"
+    "pub": "pnpm build && pnpm publish",
+    "pub:dev": "pnpm build && yalc publish --push"
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.mjs",
@@ -47,8 +48,8 @@
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
     "axios": "^1.13.2",
-    "chalk": "catalog:",
-    "glob": "catalog:"
+    "chalk": "^4.0.0",
+    "glob": "^13.0.0"
   },
   "devDependencies": {
     "build-util": "workspace:*",
